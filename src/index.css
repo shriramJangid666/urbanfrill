@@ -1,0 +1,39 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #FAF9F7;
+  --charcoal: #222222;
+  --amber: #C4892C;
+  --wa: #25D366;
+}
+
+html, body, #root { height: 100%; }
+
+body {
+  @apply bg-[var(--bg)];
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+  color: var(--charcoal);
+}
+
+/* Use Playfair for headings */
+.h-playfair { font-family: 'Playfair Display', serif; }
+
+html {
+  scroll-behavior: smooth;
+}
+
+section {
+  scroll-margin-top: 80px; /* keeps content from hiding under header */
+}
+
+/* Prevent unwanted horizontal scrolling globally */
+html, body {
+  overflow-x: hidden;
+  width: 100%;
+}
+
+a{
+  text-decoration: none;
+}

@@ -1,0 +1,103 @@
+/* footer.css - polished, minimal footer */
+:root {
+  --bg: #faf9f7;
+  --charcoal: #222;
+  --amber: #c4892c;
+  --wa: #25d366;
+}
+
+.uf-footer {
+  background: #111;
+  color: #ddd;
+  padding-top: 60px;
+  font-family: "Inter", sans-serif;
+  position: relative;
+}
+
+.footer-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px 40px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 40px;
+}
+
+/* --- Brand --- */
+.footer-about .footer-logo {
+  width: 56px;
+  height: 56px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, teal, var(--amber));
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.footer-about h3 {
+  margin: 0;
+  font-size: 1.3rem;
+  color: #fff;
+}
+
+.footer-about p {
+  margin-top: 8px;
+  line-height: 1.6;
+  color: #aaa;
+  font-size: 0.9rem;
+}
+
+/* --- Contact --- */
+.footer-contact h4,
+.footer-links h4 {
+  margin-bottom: 10px;
+  color: #fff;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.footer-contact ul,
+.footer-links ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.footer-contact a,
+.footer-links a {
+  color: #bbb;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.footer-contact a:hover,
+.footer-links a:hover {
+  color: var(--amber);
+}
+
+/* --- Footer bottom --- */
+.footer-bottom {
+  border-top: 1px solid rgba(255,255,255,0.1);
+  text-align: center;
+  padding: 18px 0;
+  color: #999;
+  font-size: 0.85rem;
+}
+
+/* --- Responsive --- */
+@media (max-width: 700px) {
+  .footer-container {
+    text-align: center;
+    gap: 24px;
+  }
+  .footer-about, .footer-contact, .footer-links {
+    align-items: center;
+  }
+}

@@ -1,0 +1,161 @@
+:root {
+  --amber: #c4892c;
+  --wa: #25d366;
+  --charcoal: #222222;
+  --bg: #faf9f7;
+  --max-width: 1200px;
+}
+
+/* overall section */
+.hero {
+  background: var(--bg);
+  padding: 60px 24px;
+}
+
+.hero-container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+}
+
+/* collage grid */
+.hero-collage {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 180px 180px;
+  gap: 16px;
+  position: relative;
+}
+
+.hero-collage div {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  background: #f4f4f4;
+}
+
+/* big image */
+.collage-big {
+  grid-row: 1 / span 2;
+}
+
+.collage-big img,
+.collage-small img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* small tiles */
+.collage-small {
+  height: 100%;
+}
+
+.collage-small img {
+  min-height: 170px;
+}
+
+/* text block */
+.hero-text {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.hero-text h2 {
+  font-size: 2.6rem;
+  line-height: 1.2;
+  color: var(--charcoal);
+  font-family: "Playfair Display", serif;
+  margin: 0;
+}
+
+.hero-text p {
+  color: #555;
+  font-size: 1rem;
+  line-height: 1.7;
+  max-width: 90%;
+}
+
+/* buttons */
+.hero-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 12px;
+}
+
+.btn {
+  display: inline-block;
+  padding: 12px 20px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+}
+
+.btn-dark {
+  background: var(--charcoal);
+  color: white;
+}
+
+.btn-dark:hover {
+  background: #111;
+  transform: translateY(-2px);
+}
+
+.btn-whatsapp {
+  background: var(--wa);
+  color: white;
+}
+
+.btn-whatsapp:hover {
+  background: #1ebc57;
+  transform: translateY(-2px);
+}
+
+/* responsive tweaks */
+@media (max-width: 900px) {
+  .hero-container {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .hero-collage {
+    grid-template-rows: 200px 200px;
+  }
+
+  .hero-text h2 {
+    font-size: 2.1rem;
+  }
+
+  .hero-text p {
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 500px) {
+  .hero {
+    padding: 40px 16px;
+  }
+
+  .hero-collage {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .hero-text h2 {
+    font-size: 1.8rem;
+  }
+
+  .btn {
+    width: 100%;
+    text-align: center;
+  }
+}

@@ -1,0 +1,25 @@
+/* animations.css - simple reusable fade & slide animations */
+.reveal {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* optional variants */
+.reveal-left {
+  transform: translateX(-40px);
+}
+
+.reveal-right {
+  transform: translateX(40px);
+}
+
+.reveal.visible.reveal-left,
+.reveal.visible.reveal-right {
+  transform: translateX(0);
+}

@@ -1,0 +1,224 @@
+/* header.css */
+
+.uf-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: #fff;
+  border-bottom: 1px solid #eee;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.uf-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* logo */
+.uf-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.uf-logo-icon {
+  width: 42px;
+  height: 42px;
+  background: linear-gradient(135deg, #0d9488, #fbbf24);
+  color: #fff;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  font-size: 1rem;
+}
+
+.uf-logo-text h1 {
+  font-size: 1.1rem;
+  margin: 0;
+  color: #111;
+}
+.uf-logo-text p {
+  font-size: 0.75rem;
+  color: #777;
+  margin: 0;
+}
+
+/* navigation links */
+.uf-nav {
+  display: flex;
+  gap: 24px;
+}
+
+.uf-nav a {
+  color: #333;
+  text-decoration: none;
+  font-size: 0.95rem;
+  transition: color 0.2s ease;
+}
+.uf-nav a:hover {
+  color: #0d9488;
+}
+
+/* right actions */
+.uf-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.uf-btn {
+  background: #0d9488;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.uf-btn-outline {
+  background: transparent;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 8px 14px;
+  cursor: pointer;
+}
+
+.uf-user {
+  font-size: 0.9rem;
+  color: #333;
+}
+
+/* cart button */
+.uf-cart-btn {
+  position: relative;
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+}
+.uf-cart-count {
+  position: absolute;
+  top: -5px;
+  right: -8px;
+  background: #f59e0b;
+  color: white;
+  border-radius: 999px;
+  font-size: 12px;
+  padding: 2px 6px;
+  font-weight: 700;
+}
+
+/* hamburger */
+.uf-hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+}
+.uf-hamburger span {
+  width: 22px;
+  height: 2px;
+  background: #333;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+.uf-hamburger.active span:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+.uf-hamburger.active span:nth-child(2) {
+  opacity: 0;
+}
+.uf-hamburger.active span:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+/* Prevent horizontal scroll */
+html,
+body {
+  overflow-x: hidden;
+  width: 100%;
+}
+/* add or merge into header.css */
+
+/* mobile-only logout button inside the nav */
+.uf-mobile-logout {
+  display: none; /* desktop hidden */
+  background: transparent;
+  border: none;
+  color: #d23b3b;
+  padding: 8px 0;
+  text-align: left;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+/* when viewport <= 768px show mobile logout and hide desktop logout button */
+@media (max-width: 768px) {
+  .uf-btn-outline {
+    display: none; /* hide desktop logout */
+  }
+  .uf-mobile-logout {
+    display: block;
+  }
+}
+
+/* responsive */
+@media (max-width: 768px) {
+  .uf-nav {
+    position: fixed;
+    top: 64px;
+    right: 0;
+    background: #fff;
+    flex-direction: column;
+    width: 200px;
+    border-left: 1px solid #eee;
+    padding: 20px;
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    height: calc(100vh - 64px);
+  }
+  .uf-nav.open {
+    transform: translateX(0);
+  }
+  .uf-hamburger {
+    display: flex;
+  }
+  .uf-nav a {
+    font-size: 1rem;
+    padding: 8px 0;
+  }
+  .uf-actions {
+    gap: 8px;
+  }
+}
+
+/* add to header.css */
+.uf-mobile-login {
+  display: none;
+  background: #0d9488;
+  color: #fff;
+  border: none;
+  padding: 10px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 12px;
+}
+@media (max-width: 768px) {
+  .uf-mobile-login {
+    display: block;
+  }
+  .uf-btn {
+    display: none;
+  } /* hide top-right login button on mobile */
+}
