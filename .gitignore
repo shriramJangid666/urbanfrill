@@ -7,18 +7,41 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
+# Dependency directories
+node_modules/
 
-# Editor directories and files
+# Build output
+dist/
+dist-ssr/
+
+# Local env files
+*.local
+.env
+.env.*.local
+
+# Editor and system files
 .vscode/*
 !.vscode/extensions.json
-.idea
+.idea/
 .DS_Store
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+
+# Lock files (optional, uncomment if you don’t want to commit them)
+# package-lock.json
+# yarn.lock
+
+# OS
+Thumbs.db
+
+# Ignore temporary files
+tmp/
+temp/
+
+# Public folder (don’t ignore!)
+# Keep images and static files
+!public/
+!public/**
