@@ -2,6 +2,7 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
 export default defineConfig({
+  base: '/urbanfrill/',
   plugins: [react()],
-  base: '/urbanfrill/', // <-- important for GitHub Pages
 })
+
