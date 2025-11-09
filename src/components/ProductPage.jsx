@@ -1,13 +1,18 @@
-// src/components/ProductPage.jsx
-import React, { useState } from "react";
+import React, { useMemo, useState, useLayoutEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
+import { productImg, asset } from "../utils/asset";
+import { forceTop } from "../utils/scrollToTop";
 import "./product-page.css";
 
 export default function ProductPage({ product }) {
-  const [idx, setIdx] = useState(0);
   const { user } = useAuth();
   const { addToCart } = useCart();
+
+  // 🔹 scroll to top before paint whenever product (or hash) changes
+  useLayoutEffect(() => {
+    forceTop();
+  }, [product?.id, window.location.hash]);
 
   if (!product) {
     return (
@@ -24,6 +29,18 @@ export default function ProductPage({ product }) {
     );
   }
 
+  // Normalize images: prefer array, else fall back to single image
+  const images = useMemo(() => {
+    const fromArray = Array.isArray(product.images)
+      ? product.images.filter(Boolean)
+      : [];
+    if (fromArray.length) return fromArray;
+    return product.image ? [product.image] : [];
+  }, [product]);
+
+  const [idx, setIdx] = useState(0);
+  const current = images[idx] || "images/placeholder.png";
+
   const handleAdd = () => {
     if (!user) {
       alert("Please log in to add to cart.");
@@ -33,14 +50,17 @@ export default function ProductPage({ product }) {
       id: product.id,
       name: product.name,
       price: Number(product.price) || 0,
-      image: product.images?.[0],
+      image: images[0] || "images/placeholder.png",
       qty: 1,
     });
     alert("Item added to cart!");
   };
 
   return (
-    <div className="pp-wrap" style={{ maxWidth: 1100, margin: "40px auto", padding: "0 18px" }}>
+    <div
+      className="pp-wrap"
+      style={{ maxWidth: 1100, margin: "40px auto", padding: "0 18px" }}
+    >
       <button
         onClick={() => (window.location.hash = "#products")}
         className="pp-back"
@@ -52,20 +72,33 @@ export default function ProductPage({ product }) {
         <div className="pp-media">
           <div className="pp-main">
             <img
-              src={product.images[idx] || "/images/placeholder.png"}
+              className="pd-main"
+              src={productImg(current)}
               alt={product.name}
+              loading="eager"
+              onError={(e) =>
+                (e.currentTarget.src = asset("images/placeholder.png"))
+              }
             />
           </div>
 
-          {product.images?.length > 1 && (
-            <div className="pp-thumbs">
-              {product.images.map((img, i) => (
+          {images.length > 1 && (
+            <div className="pp-thumbs" role="list">
+              {images.map((img, i) => (
                 <button
-                  key={i}
+                  key={`${img}-${i}`}
                   className={`pp-thumb ${i === idx ? "active" : ""}`}
                   onClick={() => setIdx(i)}
+                  aria-label={`Show image ${i + 1}`}
                 >
-                  <img src={img} alt={`thumb-${i}`} />
+                  <img
+                    src={productImg(img)}
+                    alt={`thumb-${i + 1}`}
+                    loading="lazy"
+                    onError={(e) =>
+                      (e.currentTarget.src = asset("images/placeholder.png"))
+                    }
+                  />
                 </button>
               ))}
             </div>
@@ -74,11 +107,15 @@ export default function ProductPage({ product }) {
 
         <div className="pp-info">
           <h1>{product.name}</h1>
-          <p className="pp-price">₹{Number(product.price).toLocaleString()}</p>
+          <p className="pp-price">
+            ₹{Number(product.price || 0).toLocaleString()}
+          </p>
           <p className="pp-desc">{product.desc}</p>
 
           <div style={{ marginTop: 18, display: "flex", gap: 12 }}>
-            <button className="pp-btn" onClick={handleAdd}>Add to cart</button>
+            <button className="pp-btn" onClick={handleAdd}>
+              Add to cart
+            </button>
             <button
               className="pp-btn-outline"
               onClick={() => alert("Buy now → checkout will be added soon")}

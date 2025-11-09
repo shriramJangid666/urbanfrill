@@ -37,3 +37,9 @@ html, body {
 a{
   text-decoration: none;
 }
+
+html { scroll-behavior: auto !important; }
+
+/* Make sure the main container can be scrolled programmatically */
+html, body, #root { height: 100%; }
+#root { overflow: auto; }
