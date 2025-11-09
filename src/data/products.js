@@ -1,3 +1,4 @@
+// src/data/products.js
 const PRODUCTS = [
   {
     id: 1,
@@ -5,10 +6,7 @@ const PRODUCTS = [
     desc: "Custom made | Free on-site measuring",
     price: 299,
     category: "Curtains",
-    images: [
-      "/images/hero-left.jpg",               // ✅ exists
-      // add more only if the files exist
-    ],
+    images: ["/images/hero-left.jpg"],          // ✅ exists
   },
   {
     id: 2,
@@ -16,9 +14,7 @@ const PRODUCTS = [
     desc: "Vinyl, easy-clean finish",
     price: 799,
     category: "Wallpapers",
-    images: [
-      "/images/hero-topright.jpg"      // ✅ exists
-    ],
+    images: ["/images/hero-topright.jpg"],      // ✅ exists
   },
   {
     id: 3,
@@ -26,9 +22,7 @@ const PRODUCTS = [
     desc: "Premium fabric, stitched",
     price: 1499,
     category: "Bedback",
-    images: [
-      "/images/hero-bottomright.jpg"   // ✅ exists
-    ],
+    images: ["/images/hero-bottomright.jpg"],   // ✅ exists
   },
 ];
 
