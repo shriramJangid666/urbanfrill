@@ -1,4 +1,3 @@
-// src/data/products.js
 const PRODUCTS = [
   {
     id: 1,
@@ -7,9 +6,8 @@ const PRODUCTS = [
     price: 299,
     category: "Curtains",
     images: [
-      "/images/hero-left.jpg",
-      "/images/curtain-2.jpg",   // optional extra image (create or reuse images)
-      "/images/curtain-3.jpg"
+      "/images/hero-left.jpg",               // ✅ exists
+      // add more only if the files exist
     ],
   },
   {
@@ -19,8 +17,7 @@ const PRODUCTS = [
     price: 799,
     category: "Wallpapers",
     images: [
-      "/images/hero-topright.jpg",
-      "/images/wallpaper-2.jpg"
+      "/images/hero-topright.jpg"      // ✅ exists
     ],
   },
   {
@@ -30,8 +27,7 @@ const PRODUCTS = [
     price: 1499,
     category: "Bedback",
     images: [
-      "/images/hero-bottomright.jpg",
-      "/images/bedback-2.jpg"
+      "/images/hero-bottomright.jpg"   // ✅ exists
     ],
   },
 ];

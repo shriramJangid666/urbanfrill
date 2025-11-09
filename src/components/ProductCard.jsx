@@ -2,6 +2,7 @@
 import React from "react";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
+import { productImg, asset } from '../utils/asset'
 import "./product-card.css";
 
 export default function ProductCard({ product, onView = () => {} }) {
@@ -9,6 +10,7 @@ export default function ProductCard({ product, onView = () => {} }) {
   const { addToCart } = useCart();
 
   const priceNumber = Number(product.price) || 0;
+  const primaryImage = product.images?.[0] || product.image;
 
   const handleAddToCart = () => {
     if (!user) {
@@ -20,7 +22,8 @@ export default function ProductCard({ product, onView = () => {} }) {
       id: product.id,
       name: product.name,
       price: priceNumber,
-      image: product.images?.[0] || product.image,
+      // image: product.images?.[0] || product.image,
+      image: primaryImage,
       qty: 1,
     });
     alert(`${product.name} has been added to your cart!`);
@@ -36,7 +39,8 @@ export default function ProductCard({ product, onView = () => {} }) {
       id: product.id,
       name: product.name,
       price: priceNumber,
-      image: product.images?.[0] || product.image,
+      // image: product.images?.[0] || product.image,
+      image: primaryImage,
       qty: 1,
     });
 
@@ -51,9 +55,9 @@ export default function ProductCard({ product, onView = () => {} }) {
         style={{ cursor: "pointer" }}
       >
         <img
-          src={product.images?.[0] || "/images/placeholder.png"}
+          src={productImg(primaryImage)}
           alt={product.name}
-          onError={(e) => (e.currentTarget.src = "/images/placeholder.png")}
+          onError={(e) => (e.currentTarget.src = asset("images/placeholder.png"))}
           loading="lazy"
         />
       </div>

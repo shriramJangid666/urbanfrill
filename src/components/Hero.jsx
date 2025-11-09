@@ -1,5 +1,6 @@
 import React from "react";
 import "./hero.css";
+import { asset } from "../utils/asset";
 
 const PHONE = "917821085631";
 
@@ -10,13 +11,13 @@ export default function Hero() {
         {/* LEFT - Collage */}
         <div className="hero-collage">
           <div className="collage-big">
-            <img src="/images/hero-left.jpg" alt="Curtains" />
+            <img src={asset('images/hero-left.jpg')} alt="Curtains" />
           </div>
           <div className="collage-small top">
-            <img src="/images/hero-topright.jpg" alt="Wallpaper" />
+            <img src={asset("images/hero-topright.jpg")} alt="Wallpaper" />
           </div>
           <div className="collage-small bottom">
-            <img src="/images/hero-bottomright.jpg" alt="Bedback" />
+            <img src={asset("images/hero-bottomright.jpg")} alt="Bedback" />
           </div>
         </div>
 
