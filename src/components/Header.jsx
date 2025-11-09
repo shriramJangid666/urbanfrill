@@ -78,7 +78,7 @@ export default function Header({ onRequestAuth = () => {} }) {
   const { itemCount } = useCart();
 
   const [showCart, setShowCart] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false); // mobile menu
+  const [menuOpen, setMenuOpen] = useState(false); // mobile drawer
 
   const name =
     user?.displayName || (user?.email ? user.email.split("@")[0] : "");
@@ -94,7 +94,10 @@ export default function Header({ onRequestAuth = () => {} }) {
   };
 
   const handleCartClick = () => {
-    if (!user) return onRequestAuth();
+    if (!user) {
+      onRequestAuth();
+      return;
+    }
     setShowCart(true);
   };
 
@@ -105,9 +108,9 @@ export default function Header({ onRequestAuth = () => {} }) {
   return (
     <>
       <header className="uf3-header" role="banner">
-        {/* ROW 1: Left brand | Center primary | Right user actions */}
+        {/* ROW 1: brand | primary | actions */}
         <div className="uf3-top">
-          {/* Left: logo + text (click goes to top/home) */}
+          {/* Left: logo + text (desktop left, mobile centered via CSS) */}
           <a
             className="uf3-brand"
             href="#home"
@@ -129,7 +132,7 @@ export default function Header({ onRequestAuth = () => {} }) {
             </span>
           </a>
 
-          {/* Center: primary links */}
+          {/* Center: primary links (hidden on mobile) */}
           <nav className="uf3-primary" aria-label="Primary">
             {PRIMARY.map((p) => (
               <a
@@ -145,10 +148,10 @@ export default function Header({ onRequestAuth = () => {} }) {
             ))}
           </nav>
 
-          {/* Right: user cluster */}
+          {/* Right: actions (on mobile we show ONLY the burger; user/cart hidden via CSS) */}
           <div className="uf3-actions">
             <button
-              className="uf3-user"
+              className="uf3-user uf3-hide-on-mobile"
               onClick={handleUserClick}
               title={user ? name : "Login / Sign up"}
             >
@@ -161,7 +164,7 @@ export default function Header({ onRequestAuth = () => {} }) {
             </button>
 
             <button
-              className="uf3-cart"
+              className="uf3-cart uf3-hide-on-mobile"
               onClick={handleCartClick}
               aria-label="Open cart"
               title="Cart"
@@ -171,16 +174,19 @@ export default function Header({ onRequestAuth = () => {} }) {
             </button>
 
             {user ? (
-              <button className="uf3-ghost" onClick={logout}>
+              <button className="uf3-ghost uf3-hide-on-mobile" onClick={logout}>
                 Logout
               </button>
             ) : (
-              <button className="uf3-primarybtn" onClick={onRequestAuth}>
+              <button
+                className="uf3-primarybtn uf3-hide-on-mobile"
+                onClick={onRequestAuth}
+              >
                 Login / Sign up
               </button>
             )}
 
-            {/* Hamburger (mobile only) */}
+            {/* Hamburger (always rendered; only visible on mobile) */}
             <button
               className={`uf3-burger ${menuOpen ? "is-open" : ""}`}
               aria-label="Toggle menu"
@@ -194,14 +200,13 @@ export default function Header({ onRequestAuth = () => {} }) {
           </div>
         </div>
 
-        {/* ROW 2: centered categories with hover dropdown (desktop) */}
+        {/* ROW 2: categories (hidden on mobile) */}
         <div className="uf3-catsrow">
           <nav className="uf3-cats" aria-label="Categories">
             {NAV.map((m) => (
               <div key={m.label} className="uf3-cat">
                 <button className="uf3-catbtn" onClick={() => go(m.hash)}>
                   {m.label}
-                  {/* caret */}
                   <svg
                     className="uf3-caret"
                     viewBox="0 0 16 16"
@@ -217,8 +222,6 @@ export default function Header({ onRequestAuth = () => {} }) {
                     />
                   </svg>
                 </button>
-
-                {/* hover/focus menu */}
                 <div className="uf3-panel" role="menu">
                   <div className="uf3-grid">
                     {m.items.map((sub) => (
@@ -248,12 +251,75 @@ export default function Header({ onRequestAuth = () => {} }) {
           </nav>
         </div>
 
-        {/* MOBILE PANEL: logo+text centered in bar, hamburger at right */}
+        {/* MOBILE FULLSCREEN MENU */}
         <div
           className={`uf3-mobile ${menuOpen ? "show" : ""}`}
-          role="navigation"
+          role="dialog"
+          aria-modal="true"
           aria-label="Mobile menu"
         >
+          {/* sticky header inside drawer with close */}
+          <div className="uf3-mobbar">
+            <a
+              className="uf3-mobbrand"
+              href="#home"
+              onClick={(e) => {
+                e.preventDefault();
+                go("#home");
+              }}
+              aria-label="UrbanFrill Home"
+            >
+              <img className="uf3-logo" src={asset("images/logo.png")} alt="" />
+              <span className="uf3-title">UrbanFrill</span>
+            </a>
+            <button
+              className="uf3-close"
+              aria-label="Close menu"
+              onClick={() => setMenuOpen(false)}
+            >
+              ✕
+            </button>
+          </div>
+
+          {/* user + cart live in the menu on mobile */}
+          <div className="uf3-mob-user">
+            <button
+              className="uf3-mob-userbtn"
+              onClick={() => (!user ? onRequestAuth() : null)}
+            >
+              {user?.photoURL ? (
+                <img src={user.photoURL} alt={name || "User"} />
+              ) : (
+                <CiUser size={18} aria-hidden />
+              )}
+              <span>{user ? `Hi, ${name}` : "Login / Sign up"}</span>
+            </button>
+
+            <button
+              className="uf3-mob-cartbtn"
+              onClick={() => {
+                setMenuOpen(false);
+                handleCartClick();
+              }}
+            >
+              <TiShoppingCart size={18} aria-hidden />
+              <span>Cart {itemCount > 0 ? `(${itemCount})` : ""}</span>
+            </button>
+
+            {user && (
+              <button
+                className="uf3-mob-logout"
+                onClick={() => {
+                  logout();
+                  setMenuOpen(false);
+                }}
+              >
+                Logout
+              </button>
+            )}
+          </div>
+
+          {/* Primary links */}
           <div className="uf3-mobile-primary">
             {PRIMARY.map((p) => (
               <a
@@ -269,7 +335,7 @@ export default function Header({ onRequestAuth = () => {} }) {
             ))}
           </div>
 
-          {/* Category accordions with + / − icon */}
+          {/* Category accordions (+ changes to × when open) */}
           <div className="uf3-mobile-cats">
             {NAV.map((m) => (
               <details className="uf3-acc" key={m.label}>
@@ -303,28 +369,6 @@ export default function Header({ onRequestAuth = () => {} }) {
               </details>
             ))}
           </div>
-
-          {!user ? (
-            <button
-              className="uf3-mobile-auth"
-              onClick={() => {
-                setMenuOpen(false);
-                onRequestAuth();
-              }}
-            >
-              Login / Sign up
-            </button>
-          ) : (
-            <button
-              className="uf3-mobile-logout"
-              onClick={() => {
-                logout();
-                setMenuOpen(false);
-              }}
-            >
-              Logout
-            </button>
-          )}
         </div>
       </header>
 
