@@ -12,7 +12,6 @@ import AuthModal from "./components/AuthModal";
 import { useAuth } from "./context/AuthContext";
 import "./index.css";
 import PRODUCTS from "./data/products"; // your data file
-import { hardScrollToTop } from "./utils/scrollToTop";
 
 
 export default function App() {
@@ -26,12 +25,7 @@ export default function App() {
     if (user && showAuthModal) setShowAuthModal(false);
   }, [user, showAuthModal]);
 
-  useEffect(() => {
-    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
-    const onHash = () => hardScrollToTop();
-    window.addEventListener('hashchange', onHash);
-    return () => window.removeEventListener('hashchange', onHash);
-  }, []);
+  
 
   // prevent body scroll while modal open
   useEffect(() => {
