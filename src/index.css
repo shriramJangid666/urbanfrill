@@ -43,3 +43,14 @@ html { scroll-behavior: auto !important; }
 /* Make sure the main container can be scrolled programmatically */
 html, body, #root { height: 100%; }
 #root { overflow: auto; }
+
+/* --- Global layout fixes --- */
+html, body {
+  width: 100%;
+  overflow-x: hidden;   /* 🚫 stops horizontal scrolling */
+}
+
+#root, .app, .uf-container {
+  max-width: 100%;
+  overflow-x: clip;     /* modern + smoother than hidden */
+}

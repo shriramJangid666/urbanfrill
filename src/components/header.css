@@ -222,3 +222,256 @@ body {
     display: none;
   } /* hide top-right login button on mobile */
 }
+
+/* Desktop nav visibility */
+.uf-nav-desktop {
+  display: none;
+  gap: 12px;
+  align-items: center;
+}
+@media (min-width: 960px) {
+  .uf-nav-desktop {
+    display: flex;
+  }
+}
+
+/* Top links */
+.uf-toplink {
+  background: transparent;
+  border: 0;
+  padding: 10px 8px;
+  cursor: pointer;
+  border-radius: 8px;
+  font: inherit;
+}
+.uf-toplink:hover,
+.uf-toplink:focus {
+  background: #f5f7fb;
+}
+
+/* Dropdown panel */
+.uf-navitem {
+  position: relative;
+}
+.uf-panel {
+  position: absolute;
+  left: 0;
+  top: 100%;
+  margin-top: 10px;
+  width: 540px;
+  background: #fff;
+  border: 1px solid #e9eef6;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  padding: 14px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(6px);
+  transition: 0.18s ease;
+  pointer-events: none;
+  z-index: 40;
+}
+.uf-navitem.is-open .uf-panel {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.uf-panelgrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 14px;
+  padding: 6px 2px 10px;
+}
+.uf-subitem {
+  text-align: left;
+  background: #fff;
+  border: 0;
+  border-radius: 8px;
+  padding: 8px 10px;
+  cursor: pointer;
+}
+.uf-subitem:hover,
+.uf-subitem:focus {
+  background: #f3f7ff;
+  outline: 1px solid #d9e6ff;
+}
+.uf-viewall {
+  display: inline-block;
+  margin-top: 6px;
+  font-weight: 600;
+  color: #0ea5e9;
+  text-decoration: none;
+}
+
+/* Mobile drawer */
+.uf-drawer {
+  display: none;
+  border-top: 1px solid #eee;
+}
+.uf-drawer.show {
+  display: block;
+}
+.uf-drawer details {
+  border-bottom: 1px dashed #eee;
+  padding: 8px 16px;
+}
+.uf-drawer summary {
+  list-style: none;
+  cursor: pointer;
+  font-weight: 600;
+  padding: 6px 0;
+}
+.uf-drawerlist {
+  display: grid;
+  gap: 6px;
+  padding: 6px 0 10px;
+}
+.uf-drawersub {
+  text-align: left;
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+.uf-drawersub:hover {
+  background: #f8fafc;
+}
+.uf-drawerlink {
+  display: block;
+  padding: 10px 16px;
+}
+
+/* Keep your existing .uf-header/.uf-container/.uf-actions/.uf-hamburger/.uf-logo styles */
+/* Mobile drawer base (you already have .uf-drawer/.show) */
+.uf-drawer {
+  display: none;
+  border-top: 1px solid #eee;
+}
+.uf-drawer.show {
+  display: block;
+}
+
+/* Accordion */
+.uf-acc {
+  border-bottom: 1px dashed #eee;
+}
+.uf-acc-trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fff;
+  border: 0;
+  padding: 12px 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.uf-acc-trigger:focus {
+  outline: 2px solid #d9e6ff;
+  outline-offset: 2px;
+}
+.uf-caret {
+  transition: transform 0.2s ease;
+}
+.uf-acc-trigger.is-open .uf-caret {
+  transform: rotate(180deg);
+}
+
+.uf-acc-panel {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.24s ease, opacity 0.2s ease;
+  opacity: 0;
+}
+.uf-acc-panel.open {
+  max-height: 520px;
+  opacity: 1;
+} /* plenty for items */
+
+.uf-acc-list {
+  display: grid;
+  gap: 8px;
+  padding: 8px 16px 14px;
+}
+.uf-acc-item,
+.uf-acc-viewall {
+  text-align: left;
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 10px;
+  padding: 10px 12px;
+  text-decoration: none;
+  color: inherit;
+}
+.uf-acc-item:hover,
+.uf-acc-viewall:hover {
+  background: #f8fafc;
+}
+
+/* Contain everything inside header */
+.uf-header {
+  width: 100%;
+  overflow-x: clip; /* ensures dropdowns don’t force scrollbars */
+}
+
+.uf-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+/* Dropdown panels should not exceed viewport */
+.uf-panel {
+  max-width: calc(100vw - 32px);
+  box-sizing: border-box;
+}
+
+/* Contain everything inside header */
+.uf-header {
+  width: 100%;
+  overflow-x: clip; /* prevents scroll caused by dropdown overflow */
+}
+
+.uf-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+/* Dropdown panels should not exceed viewport */
+.uf-panel {
+  max-width: calc(100vw - 32px);
+  box-sizing: border-box;
+  left: 0;
+  right: auto;
+  overflow-x: hidden;
+}
+
+/* Make rightmost dropdowns fit screen */
+.uf-navitem:last-child .uf-panel {
+  right: 0;
+  left: auto;
+}
+
+/* Mobile drawer width fix */
+.uf-drawer {
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+.uf-acc-list {
+  width: 100%;
+  box-sizing: border-box;
+}

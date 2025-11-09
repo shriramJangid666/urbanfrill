@@ -13,7 +13,6 @@ import { useAuth } from "./context/AuthContext";
 import "./index.css";
 import PRODUCTS from "./data/products"; // your data file
 
-
 export default function App() {
   const { user } = useAuth();
 
@@ -25,7 +24,10 @@ export default function App() {
     if (user && showAuthModal) setShowAuthModal(false);
   }, [user, showAuthModal]);
 
-  
+  useEffect(() => {
+    document.body.style.overflowX = "hidden";
+    return () => (document.body.style.overflowX = "");
+  }, []);
 
   // prevent body scroll while modal open
   useEffect(() => {
