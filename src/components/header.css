@@ -1,477 +1,463 @@
-/* header.css */
+/* ===== UrbanFrill Header v3 (centered links, logo+text, proper mobile) ===== */
+:root {
+  --bg: #fff;
+  --fg: #0f172a;
+  --muted: #6b7280;
+  --line: #e9eef6;
+  --accent: #0d9488;
+  --accent2: #0ea5e9;
+  --shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+}
 
-.uf-header {
+/* Base shell */
+.uf3-header {
   position: sticky;
   top: 0;
-  z-index: 100;
-  background: #fff;
-  border-bottom: 1px solid #eee;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+  z-index: 200;
+  background: var(--bg);
+  border-bottom: 1px solid var(--line);
+  box-shadow: var(--shadow);
 }
 
-.uf-container {
+/* Row 1: three columns (left brand, center links, right actions) */
+.uf3-top {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 10px 20px;
-  display: flex;
+  padding: 10px 16px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
-  justify-content: space-between;
+  gap: 12px;
 }
 
-/* logo */
-.uf-logo {
-  display: flex;
+/* Brand cluster */
+.uf3-brand {
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
-}
-
-.uf-logo-icon {
-  width: 42px;
-  height: 42px;
-  background: linear-gradient(135deg, #0d9488, #fbbf24);
-  color: #fff;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 10px;
-  font-size: 1rem;
-}
-
-.uf-logo-text h1 {
-  font-size: 1.1rem;
-  margin: 0;
-  color: #111;
-}
-.uf-logo-text p {
-  font-size: 0.75rem;
-  color: #777;
-  margin: 0;
-}
-
-/* navigation links */
-.uf-nav {
-  display: flex;
-  gap: 24px;
-}
-
-.uf-nav a {
-  color: #333;
+  gap: 10px;
   text-decoration: none;
-  font-size: 0.95rem;
-  transition: color 0.2s ease;
 }
-.uf-nav a:hover {
-  color: #0d9488;
+.uf3-logo {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+  border-radius: 8px;
+}
+.uf3-brandtext {
+  display: grid;
+  line-height: 1.1;
+}
+.uf3-title {
+  color: var(--fg);
+  font-weight: 800;
+  font-size: 1.02rem;
+  letter-spacing: 0.2px;
+}
+.uf3-tag {
+  color: var(--muted);
+  font-size: 0.78rem;
 }
 
-/* right actions */
-.uf-actions {
+/* Center primary links */
+.uf3-primary {
   display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.uf-btn {
-  background: #0d9488;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  padding: 8px 14px;
-  cursor: pointer;
-  font-weight: 500;
-}
-
-.uf-btn-outline {
-  background: transparent;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  padding: 8px 14px;
-  cursor: pointer;
-}
-
-.uf-user {
-  font-size: 0.9rem;
-  color: #333;
-}
-
-/* cart button */
-.uf-cart-btn {
-  position: relative;
-  background: transparent;
-  border: none;
-  font-size: 20px;
-  cursor: pointer;
-}
-.uf-cart-count {
-  position: absolute;
-  top: -5px;
-  right: -8px;
-  background: #f59e0b;
-  color: white;
-  border-radius: 999px;
-  font-size: 12px;
-  padding: 2px 6px;
-  font-weight: 700;
-}
-
-/* hamburger */
-.uf-hamburger {
-  display: none;
-  flex-direction: column;
   justify-content: center;
-  gap: 5px;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  padding: 6px;
-}
-.uf-hamburger span {
-  width: 22px;
-  height: 2px;
-  background: #333;
-  border-radius: 2px;
-  transition: all 0.3s ease;
-}
-.uf-hamburger.active span:nth-child(1) {
-  transform: translateY(7px) rotate(45deg);
-}
-.uf-hamburger.active span:nth-child(2) {
-  opacity: 0;
-}
-.uf-hamburger.active span:nth-child(3) {
-  transform: translateY(-7px) rotate(-45deg);
-}
-
-/* Prevent horizontal scroll */
-html,
-body {
-  overflow-x: hidden;
-  width: 100%;
-}
-/* add or merge into header.css */
-
-/* mobile-only logout button inside the nav */
-.uf-mobile-logout {
-  display: none; /* desktop hidden */
-  background: transparent;
-  border: none;
-  color: #d23b3b;
-  padding: 8px 0;
-  text-align: left;
-  cursor: pointer;
-  font-weight: 600;
-}
-
-/* when viewport <= 768px show mobile logout and hide desktop logout button */
-@media (max-width: 768px) {
-  .uf-btn-outline {
-    display: none; /* hide desktop logout */
-  }
-  .uf-mobile-logout {
-    display: block;
-  }
-}
-
-/* responsive */
-@media (max-width: 768px) {
-  .uf-nav {
-    position: fixed;
-    top: 64px;
-    right: 0;
-    background: #fff;
-    flex-direction: column;
-    width: 200px;
-    border-left: 1px solid #eee;
-    padding: 20px;
-    transform: translateX(100%);
-    transition: transform 0.3s ease;
-    height: calc(100vh - 64px);
-  }
-  .uf-nav.open {
-    transform: translateX(0);
-  }
-  .uf-hamburger {
-    display: flex;
-  }
-  .uf-nav a {
-    font-size: 1rem;
-    padding: 8px 0;
-  }
-  .uf-actions {
-    gap: 8px;
-  }
-}
-
-/* add to header.css */
-.uf-mobile-login {
-  display: none;
-  background: #0d9488;
-  color: #fff;
-  border: none;
-  padding: 10px 12px;
-  border-radius: 8px;
-  cursor: pointer;
-  margin-top: 12px;
-}
-@media (max-width: 768px) {
-  .uf-mobile-login {
-    display: block;
-  }
-  .uf-btn {
-    display: none;
-  } /* hide top-right login button on mobile */
-}
-
-/* Desktop nav visibility */
-.uf-nav-desktop {
-  display: none;
-  gap: 12px;
   align-items: center;
+  gap: 18px;
+  min-width: 0;
 }
-@media (min-width: 960px) {
-  .uf-nav-desktop {
-    display: flex;
-  }
+.uf3-primary a {
+  color: var(--fg);
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 0.98rem;
+  padding: 8px 10px;
+  border-radius: 10px;
 }
-
-/* Top links */
-.uf-toplink {
-  background: transparent;
-  border: 0;
-  padding: 10px 8px;
-  cursor: pointer;
-  border-radius: 8px;
-  font: inherit;
-}
-.uf-toplink:hover,
-.uf-toplink:focus {
+.uf3-primary a:hover,
+.uf3-primary a:focus-visible {
   background: #f5f7fb;
 }
 
-/* Dropdown panel */
-.uf-navitem {
-  position: relative;
+/* Right actions */
+.uf3-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
-.uf-panel {
-  position: absolute;
-  left: 0;
-  top: 100%;
-  margin-top: 10px;
-  width: 540px;
+.uf3-user {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   background: #fff;
-  border: 1px solid #e9eef6;
+  border: 1px solid var(--line);
   border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-  padding: 14px;
-  opacity: 0;
-  visibility: hidden;
-  transform: translateY(6px);
-  transition: 0.18s ease;
-  pointer-events: none;
-  z-index: 40;
+  padding: 6px 10px;
+  cursor: pointer;
 }
-.uf-navitem.is-open .uf-panel {
-  opacity: 1;
-  visibility: visible;
-  transform: translateY(0);
-  pointer-events: auto;
+.uf3-user img {
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  object-fit: cover;
+}
+.uf3-greeting {
+  color: var(--fg);
+  font-weight: 700;
+  font-size: 0.92rem;
+  white-space: nowrap;
 }
 
-.uf-panelgrid {
+.uf3-cart {
+  position: relative;
+  border: 1px solid var(--line);
+  background: #fff;
+  border-radius: 12px;
+  padding: 8px 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+.uf3-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: #ef4444;
+  color: #fff;
+  border-radius: 999px;
+  font-size: 11px;
+  line-height: 1;
+  padding: 4px 6px;
+  font-weight: 700;
+}
+
+.uf3-primarybtn {
+  background: var(--accent);
+  color: #fff;
+  border: 0;
+  border-radius: 12px;
+  padding: 9px 14px;
+  cursor: pointer;
+  font-weight: 700;
+}
+.uf3-ghost {
+  background: #fff;
+  color: var(--fg);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 9px 14px;
+  cursor: pointer;
+}
+
+/* Burger */
+.uf3-burger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  border: 1px solid var(--line);
+  background: #fff;
+  border-radius: 10px;
+  padding: 6px;
+}
+.uf3-burger span {
+  width: 22px;
+  height: 2px;
+  background: var(--fg);
+  border-radius: 2px;
+  transition: transform 0.18s ease, opacity 0.18s ease;
+}
+.uf3-burger.is-open span:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+.uf3-burger.is-open span:nth-child(2) {
+  opacity: 0;
+}
+.uf3-burger.is-open span:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+/* Row 2: centered categories (no nav scrollbar) */
+.uf3-catsrow {
+  border-top: 1px solid var(--line);
+}
+.uf3-catsrow .uf3-cats {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 8px 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 18px;
+  overflow: visible;
+}
+.uf3-cat {
+  position: relative;
+}
+.uf3-catbtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: 0;
+  padding: 8px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  color: var(--fg);
+  font: inherit;
+  font-weight: 600;
+  font-size: 1rem;
+}
+.uf3-catbtn:hover,
+.uf3-catbtn:focus-visible {
+  background: #f5f7fb;
+}
+.uf3-caret {
+  opacity: 0.7;
+}
+
+/* Hover/focus dropdown */
+.uf3-panel {
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, 6px);
+  top: 100%;
+  margin-top: 10px;
+  min-width: 520px;
+  max-width: calc(100vw - 32px);
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  padding: 12px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s;
+  pointer-events: none;
+  z-index: 250;
+  overflow-x: hidden;
+}
+.uf3-cat:hover .uf3-panel,
+.uf3-cat:focus-within .uf3-panel {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, 0);
+  pointer-events: auto;
+}
+.uf3-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px 14px;
   padding: 6px 2px 10px;
 }
-.uf-subitem {
-  text-align: left;
+.uf3-sub {
   background: #fff;
   border: 0;
-  border-radius: 8px;
-  padding: 8px 10px;
+  border-radius: 10px;
+  padding: 9px 11px;
+  text-align: left;
   cursor: pointer;
+  color: var(--fg);
 }
-.uf-subitem:hover,
-.uf-subitem:focus {
+.uf3-sub:hover,
+.uf3-sub:focus-visible {
   background: #f3f7ff;
   outline: 1px solid #d9e6ff;
 }
-.uf-viewall {
+.uf3-viewall {
   display: inline-block;
   margin-top: 6px;
-  font-weight: 600;
-  color: #0ea5e9;
+  font-weight: 700;
+  color: var(--accent2);
   text-decoration: none;
 }
 
-/* Mobile drawer */
-.uf-drawer {
+/* Mobile menu */
+.uf3-mobile {
   display: none;
-  border-top: 1px solid #eee;
+  border-top: 1px solid var(--line);
 }
-.uf-drawer.show {
+.uf3-mobile.show {
   display: block;
 }
-.uf-drawer details {
-  border-bottom: 1px dashed #eee;
-  padding: 8px 16px;
-}
-.uf-drawer summary {
-  list-style: none;
-  cursor: pointer;
-  font-weight: 600;
-  padding: 6px 0;
-}
-.uf-drawerlist {
+.uf3-mobile-primary {
   display: grid;
-  gap: 6px;
-  padding: 6px 0 10px;
+  gap: 8px;
+  padding: 12px 16px;
 }
-.uf-drawersub {
-  text-align: left;
-  background: #fff;
-  border: 1px solid #eee;
-  border-radius: 8px;
-  padding: 8px 10px;
+.uf3-mobile-primary a {
+  padding: 10px 12px;
+  border-radius: 10px;
+  color: var(--fg);
+  text-decoration: none;
 }
-.uf-drawersub:hover {
-  background: #f8fafc;
-}
-.uf-drawerlink {
-  display: block;
-  padding: 10px 16px;
+.uf3-mobile-primary a:hover {
+  background: #f5f7fb;
 }
 
-/* Keep your existing .uf-header/.uf-container/.uf-actions/.uf-hamburger/.uf-logo styles */
-/* Mobile drawer base (you already have .uf-drawer/.show) */
-.uf-drawer {
-  display: none;
-  border-top: 1px solid #eee;
+.uf3-mobile-cats {
+  padding-bottom: 10px;
 }
-.uf-drawer.show {
-  display: block;
+.uf3-acc {
+  border-top: 1px dashed var(--line);
 }
-
-/* Accordion */
-.uf-acc {
-  border-bottom: 1px dashed #eee;
-}
-.uf-acc-trigger {
-  width: 100%;
+.uf3-accbtn {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #fff;
-  border: 0;
   padding: 12px 16px;
-  font-weight: 600;
   cursor: pointer;
+  list-style: none;
 }
-.uf-acc-trigger:focus {
-  outline: 2px solid #d9e6ff;
-  outline-offset: 2px;
-}
-.uf-caret {
+.uf3-acc[open] .uf3-plus {
+  transform: rotate(45deg);
+} /* + → × */
+.uf3-plus {
+  display: inline-block;
   transition: transform 0.2s ease;
+  font-weight: 800;
 }
-.uf-acc-trigger.is-open .uf-caret {
-  transform: rotate(180deg);
+.uf3-accpanel {
+  padding: 0 0 8px 0;
 }
-
-.uf-acc-panel {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.24s ease, opacity 0.2s ease;
-  opacity: 0;
-}
-.uf-acc-panel.open {
-  max-height: 520px;
-  opacity: 1;
-} /* plenty for items */
-
-.uf-acc-list {
-  display: grid;
-  gap: 8px;
-  padding: 8px 16px 14px;
-}
-.uf-acc-item,
-.uf-acc-viewall {
+.uf3-accitem,
+.uf3-accviewall {
+  display: block;
   text-align: left;
   background: #fff;
-  border: 1px solid #eee;
+  border: 1px solid var(--line);
   border-radius: 10px;
   padding: 10px 12px;
-  text-decoration: none;
-  color: inherit;
+  margin: 8px 16px 0;
+  color: var(--fg);
 }
-.uf-acc-item:hover,
-.uf-acc-viewall:hover {
+.uf3-accitem:hover,
+.uf3-accviewall:hover {
   background: #f8fafc;
 }
 
-/* Contain everything inside header */
-.uf-header {
-  width: 100%;
-  overflow-x: clip; /* ensures dropdowns don’t force scrollbars */
+.uf3-mobile-auth {
+  display: block;
+  background: var(--accent);
+  color: #fff;
+  border: 0;
+  border-radius: 10px;
+  padding: 10px 12px;
+  cursor: pointer;
+  margin: 12px 16px;
 }
-
-.uf-container {
-  max-width: 1200px;
-  margin: 0 auto;
+.uf3-mobile-logout {
+  display: block;
+  background: transparent;
+  border: 0;
+  color: #d23b3b;
   padding: 10px 16px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  box-sizing: border-box;
-  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  font-weight: 700;
 }
 
-/* Dropdown panels should not exceed viewport */
-.uf-panel {
-  max-width: calc(100vw - 32px);
-  box-sizing: border-box;
+/* Responsiveness */
+@media (min-width: 960px) {
+  .uf3-burger {
+    display: none;
+  }
+  .uf3-mobile {
+    display: none !important;
+  }
+}
+@media (max-width: 1199.98px) {
+  .uf3-primary a {
+    font-size: 0.94rem;
+  }
+  .uf3-catbtn {
+    font-size: 0.96rem;
+  }
+}
+@media (max-width: 959.98px) {
+  /* center brand in the bar, burger on the right */
+  .uf3-top {
+    grid-template-columns: 1fr auto 1fr;
+  }
+  .uf3-brand {
+    justify-self: center;
+  }
+  .uf3-actions {
+    justify-self: end;
+  }
+  .uf3-primary {
+    display: none;
+  } /* hide desktop primary links on mobile */
+  .uf3-catsrow {
+    display: none;
+  } /* hide desktop categories on mobile */
+  .uf3-burger {
+    display: flex;
+  }
+  .uf3-primarybtn,
+  .uf3-ghost {
+    display: none;
+  } /* move auth to mobile */
 }
 
-/* Contain everything inside header */
-.uf-header {
-  width: 100%;
-  overflow-x: clip; /* prevents scroll caused by dropdown overflow */
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .uf3-panel,
+  .uf3-burger span,
+  .uf3-plus {
+    transition: none !important;
+  }
 }
 
-.uf-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 10px 16px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  box-sizing: border-box;
-  width: 100%;
+/* ====== Compact spacing for logo + user links ====== */
+
+/* Row padding + gaps */
+.uf3-top{
+  padding: 6px 12px;          /* was 10px 16px */
+  gap: 8px;                   /* was 12px */
 }
 
-/* Dropdown panels should not exceed viewport */
-.uf-panel {
-  max-width: calc(100vw - 32px);
-  box-sizing: border-box;
-  left: 0;
-  right: auto;
-  overflow-x: hidden;
+/* Brand (logo + text) */
+.uf3-brand{ gap: 8px; }       /* was 10px */
+.uf3-logo{ width: 30px; height: 30px; border-radius: 6px; }  /* was 34x34 */
+.uf3-title{ font-size: .96rem; }
+.uf3-tag{ font-size: .72rem; }
+
+/* Center primary links slightly tighter */
+.uf3-primary{ gap: 14px; }    /* was 18px */
+.uf3-primary a{ padding: 6px 8px; font-size: .95rem; }
+
+/* Right user cluster */
+.uf3-actions{ gap: 6px; }     /* was 10px */
+.uf3-user{
+  padding: 4px 8px;           /* was 6px 10px */
+  border-radius: 10px;
+  gap: 6px;
+}
+.uf3-user img{ width: 16px; height: 16px; }
+
+.uf3-greeting{ font-size: .88rem; }
+
+/* Cart + auth buttons tighter */
+.uf3-cart{
+  padding: 6px 8px;           /* was 8px 10px */
+  border-radius: 10px;
+}
+.uf3-primarybtn,
+.uf3-ghost{
+  padding: 7px 12px;          /* was 9px 14px */
+  border-radius: 10px;
+  font-weight: 600;
 }
 
-/* Make rightmost dropdowns fit screen */
-.uf-navitem:last-child .uf-panel {
-  right: 0;
-  left: auto;
-}
+/* Category row subtle tighten */
+.uf3-catsrow .uf3-cats{ gap: 14px; }
+.uf3-catbtn{ padding: 6px 8px; font-size: .95rem; }
 
-/* Mobile drawer width fix */
-.uf-drawer {
-  width: 100%;
-  box-sizing: border-box;
-  overflow-x: hidden;
-}
-.uf-acc-list {
-  width: 100%;
-  box-sizing: border-box;
+/* Mobile: keep things compact too */
+@media (max-width: 959.98px){
+  .uf3-top{ padding: 6px 10px; }
+  .uf3-brand{ gap: 6px; }
+  .uf3-logo{ width: 28px; height: 28px; }
+  .uf3-greeting{ font-size: .86rem; }
+  .uf3-cart{ padding: 6px 8px; }
 }

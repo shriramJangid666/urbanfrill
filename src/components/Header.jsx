@@ -1,11 +1,20 @@
 // src/components/Header.jsx
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
 import CartDrawer from "./CartDrawer";
+import { asset } from "../utils/asset";
+import { TiShoppingCart } from "react-icons/ti";
+import { CiUser } from "react-icons/ci";
 import "./header.css";
 
-// ⚙️ Edit menu here
+const PRIMARY = [
+  { label: "Home", hash: "#home" },
+  { label: "Products", hash: "#products" },
+  { label: "About us", hash: "#about" },
+  { label: "Contact us", hash: "#contact" },
+];
+
 const NAV = [
   {
     label: "Curtains",
@@ -69,99 +78,162 @@ export default function Header({ onRequestAuth = () => {} }) {
   const { itemCount } = useCart();
 
   const [showCart, setShowCart] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false); // mobile drawer
-  const [open, setOpen] = useState(null); // which desktop menu is open
-  const hoverTimer = useRef();
+  const [menuOpen, setMenuOpen] = useState(false); // mobile menu
 
-  const [mobileSection, setMobileSection] = useState(null); // which accordion section is open
-
-  const toggleMobile = (i) => {
-    setMobileSection((prev) => (prev === i ? null : i)); // accordion: open one at a time
-  };
-
-  const handleCartClick = () => {
-    if (!user) {
-      onRequestAuth();
-      return;
-    }
-    setShowCart(true);
-  };
-
-  // Desktop hover helpers
-  const openMenu = (i) => {
-    clearTimeout(hoverTimer.current);
-    setOpen(i);
-  };
-  const closeMenu = () => {
-    clearTimeout(hoverTimer.current);
-    hoverTimer.current = setTimeout(() => setOpen(null), 120);
-  };
+  const name =
+    user?.displayName || (user?.email ? user.email.split("@")[0] : "");
+  const greeting = user ? `Hi, ${name}` : "Hi there";
 
   const go = (hash) => {
     window.location.hash = hash;
     setMenuOpen(false);
-    setOpen(null);
+    const id = hash.replace("#", "");
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    else window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const handleSubClick = (parent, sub) => {
-    // If later you filter client-side, call a prop like onSelectCategory(parent.label, sub)
-    go(parent.hash);
+  const handleCartClick = () => {
+    if (!user) return onRequestAuth();
+    setShowCart(true);
+  };
+
+  const handleUserClick = () => {
+    if (!user) onRequestAuth();
   };
 
   return (
     <>
-      <header className="uf-header">
-        <div className="uf-container">
-          {/* Brand */}
+      <header className="uf3-header" role="banner">
+        {/* ROW 1: Left brand | Center primary | Right user actions */}
+        <div className="uf3-top">
+          {/* Left: logo + text (click goes to top/home) */}
           <a
-            className="uf-logo"
+            className="uf3-brand"
             href="#home"
             onClick={(e) => {
               e.preventDefault();
               go("#home");
             }}
+            aria-label="UrbanFrill Home"
           >
-            <div className="uf-logo-icon">UF</div>
-            <div className="uf-logo-text">
-              <h1>UrbanFrill</h1>
-              <p>Furnish Your Lifestyle</p>
-            </div>
+            <img
+              className="uf3-logo"
+              src={asset("images/logo.png")}
+              alt="UrbanFrill"
+              onError={(e) => (e.currentTarget.style.visibility = "hidden")}
+            />
+            <span className="uf3-brandtext">
+              <span className="uf3-title">UrbanFrill</span>
+              <span className="uf3-tag">Furnish Your Lifestyle</span>
+            </span>
           </a>
 
-          {/* Desktop navigation with hover mega-menus */}
-          <nav className="uf-nav-desktop" onMouseLeave={closeMenu}>
-            {NAV.map((m, i) => (
-              <div
-                key={m.label}
-                className={`uf-navitem ${open === i ? "is-open" : ""}`}
-                onMouseEnter={() => openMenu(i)}
+          {/* Center: primary links */}
+          <nav className="uf3-primary" aria-label="Primary">
+            {PRIMARY.map((p) => (
+              <a
+                key={p.label}
+                href={p.hash}
+                onClick={(e) => {
+                  e.preventDefault();
+                  go(p.hash);
+                }}
               >
-                <button
-                  className="uf-toplink"
-                  aria-haspopup="true"
-                  aria-expanded={open === i}
-                  onFocus={() => openMenu(i)}
-                  onBlur={closeMenu}
-                  onClick={() => go(m.hash)}
-                >
+                {p.label}
+              </a>
+            ))}
+          </nav>
+
+          {/* Right: user cluster */}
+          <div className="uf3-actions">
+            <button
+              className="uf3-user"
+              onClick={handleUserClick}
+              title={user ? name : "Login / Sign up"}
+            >
+              {user?.photoURL ? (
+                <img src={user.photoURL} alt={name || "User"} />
+              ) : (
+                <CiUser size={18} aria-hidden />
+              )}
+              <span className="uf3-greeting">{greeting}</span>
+            </button>
+
+            <button
+              className="uf3-cart"
+              onClick={handleCartClick}
+              aria-label="Open cart"
+              title="Cart"
+            >
+              <TiShoppingCart size={18} aria-hidden />
+              {itemCount > 0 && <span className="uf3-badge">{itemCount}</span>}
+            </button>
+
+            {user ? (
+              <button className="uf3-ghost" onClick={logout}>
+                Logout
+              </button>
+            ) : (
+              <button className="uf3-primarybtn" onClick={onRequestAuth}>
+                Login / Sign up
+              </button>
+            )}
+
+            {/* Hamburger (mobile only) */}
+            <button
+              className={`uf3-burger ${menuOpen ? "is-open" : ""}`}
+              aria-label="Toggle menu"
+              aria-expanded={menuOpen}
+              onClick={() => setMenuOpen((v) => !v)}
+            >
+              <span></span>
+              <span></span>
+              <span></span>
+            </button>
+          </div>
+        </div>
+
+        {/* ROW 2: centered categories with hover dropdown (desktop) */}
+        <div className="uf3-catsrow">
+          <nav className="uf3-cats" aria-label="Categories">
+            {NAV.map((m) => (
+              <div key={m.label} className="uf3-cat">
+                <button className="uf3-catbtn" onClick={() => go(m.hash)}>
                   {m.label}
+                  {/* caret */}
+                  <svg
+                    className="uf3-caret"
+                    viewBox="0 0 16 16"
+                    width="14"
+                    height="14"
+                    aria-hidden
+                  >
+                    <path
+                      d="M4 6l4 4 4-4"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                    />
+                  </svg>
                 </button>
 
-                <div className="uf-panel" role="menu">
-                  <div className="uf-panelgrid">
+                {/* hover/focus menu */}
+                <div className="uf3-panel" role="menu">
+                  <div className="uf3-grid">
                     {m.items.map((sub) => (
                       <button
                         key={sub}
-                        className="uf-subitem"
+                        className="uf3-sub"
                         role="menuitem"
-                        onClick={() => handleSubClick(m, sub)}
+                        onClick={() => go(m.hash)}
                       >
                         {sub}
                       </button>
                     ))}
                   </div>
                   <a
-                    className="uf-viewall"
+                    className="uf3-viewall"
                     href={m.hash}
                     onClick={(e) => {
                       e.preventDefault();
@@ -173,144 +245,68 @@ export default function Header({ onRequestAuth = () => {} }) {
                 </div>
               </div>
             ))}
-
-            <a
-              href="#about"
-              onClick={(e) => {
-                e.preventDefault();
-                go("#about");
-              }}
-            >
-              About
-            </a>
-            <a
-              href="#contact"
-              onClick={(e) => {
-                e.preventDefault();
-                go("#contact");
-              }}
-            >
-              Contact
-            </a>
           </nav>
-
-          {/* Right actions */}
-          <div className="uf-actions">
-            <button
-              className="uf-cart-btn"
-              onClick={handleCartClick}
-              aria-label="Open cart"
-            >
-              🛒
-              {itemCount > 0 && (
-                <span className="uf-cart-count">{itemCount}</span>
-              )}
-            </button>
-
-            {user ? (
-              <>
-                <span className="uf-user">
-                  Hi, {user.displayName || user.email.split("@")[0]}
-                </span>
-                <button className="uf-btn-outline" onClick={() => logout()}>
-                  Logout
-                </button>
-              </>
-            ) : (
-              <button className="uf-btn" onClick={() => onRequestAuth()}>
-                Login / Sign up
-              </button>
-            )}
-
-            {/* Mobile burger */}
-            <button
-              className={`uf-hamburger ${menuOpen ? "active" : ""}`}
-              onClick={() => setMenuOpen((s) => !s)}
-              aria-label="Toggle menu"
-            >
-              <span></span>
-              <span></span>
-              <span></span>
-            </button>
-          </div>
         </div>
 
-        {/* Mobile drawer (click-to-open categories) */}
-        {/* Mobile drawer (accordion) */}
-        <div className={`uf-drawer ${menuOpen ? "show" : ""}`}>
-          {NAV.map((m, i) => {
-            const open = mobileSection === i;
-            return (
-              <div className={`uf-acc`} key={m.label}>
-                <button
-                  className={`uf-acc-trigger ${open ? "is-open" : ""}`}
-                  aria-expanded={open}
-                  aria-controls={`acc-panel-${i}`}
-                  onClick={() => toggleMobile(i)}
-                >
+        {/* MOBILE PANEL: logo+text centered in bar, hamburger at right */}
+        <div
+          className={`uf3-mobile ${menuOpen ? "show" : ""}`}
+          role="navigation"
+          aria-label="Mobile menu"
+        >
+          <div className="uf3-mobile-primary">
+            {PRIMARY.map((p) => (
+              <a
+                key={p.label}
+                href={p.hash}
+                onClick={(e) => {
+                  e.preventDefault();
+                  go(p.hash);
+                }}
+              >
+                {p.label}
+              </a>
+            ))}
+          </div>
+
+          {/* Category accordions with + / − icon */}
+          <div className="uf3-mobile-cats">
+            {NAV.map((m) => (
+              <details className="uf3-acc" key={m.label}>
+                <summary className="uf3-accbtn">
                   <span>{m.label}</span>
-                  <span className="uf-caret" aria-hidden>
-                    ▾
+                  <span className="uf3-plus" aria-hidden>
+                    +
                   </span>
-                </button>
-
-                <div
-                  id={`acc-panel-${i}`}
-                  className={`uf-acc-panel ${open ? "open" : ""}`}
-                  role="region"
-                >
-                  <div className="uf-acc-list">
-                    {/* “View all” first */}
-                    <a
-                      className="uf-acc-viewall"
-                      href={m.hash}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        go(m.hash);
-                      }}
+                </summary>
+                <div className="uf3-accpanel" role="region">
+                  <a
+                    className="uf3-accviewall"
+                    href={m.hash}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      go(m.hash);
+                    }}
+                  >
+                    View all {m.label} →
+                  </a>
+                  {m.items.map((sub) => (
+                    <button
+                      key={sub}
+                      className="uf3-accitem"
+                      onClick={() => go(m.hash)}
                     >
-                      View all {m.label} →
-                    </a>
-
-                    {m.items.map((sub) => (
-                      <button
-                        key={sub}
-                        className="uf-acc-item"
-                        onClick={() => handleSubClick(m, sub)}
-                      >
-                        {sub}
-                      </button>
-                    ))}
-                  </div>
+                      {sub}
+                    </button>
+                  ))}
                 </div>
-              </div>
-            );
-          })}
-
-          <a
-            className="uf-drawerlink"
-            href="#about"
-            onClick={(e) => {
-              e.preventDefault();
-              go("#about");
-            }}
-          >
-            About
-          </a>
-          <a
-            className="uf-drawerlink"
-            href="#contact"
-            onClick={(e) => {
-              e.preventDefault();
-              go("#contact");
-            }}
-          >
-            Contact
-          </a>
+              </details>
+            ))}
+          </div>
 
           {!user ? (
             <button
-              className="uf-mobile-login"
+              className="uf3-mobile-auth"
               onClick={() => {
                 setMenuOpen(false);
                 onRequestAuth();
@@ -320,7 +316,7 @@ export default function Header({ onRequestAuth = () => {} }) {
             </button>
           ) : (
             <button
-              className="uf-mobile-logout"
+              className="uf3-mobile-logout"
               onClick={() => {
                 logout();
                 setMenuOpen(false);

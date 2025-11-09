@@ -36,7 +36,7 @@ export default function ContactForm() {
   };
 
   return (
-    <div className="contact-form-outer">
+    <div className="contact-form-outer" id="contact">
       <div className="contact-form-container">
         <h2>Contact Us</h2>
         <p className="lead">Leave your details below — we’ll reach out soon.</p>
