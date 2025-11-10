@@ -1,5 +1,5 @@
 // src/components/Header.jsx
-import React, { useState } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import { useAuth } from "../context/useAuth";
 import { useCart } from "../context/CartContext";
 import CartDrawer from "./CartDrawer";
@@ -73,37 +73,54 @@ const NAV = [
   },
 ];
 
-export default function Header({ onRequestAuth = () => {} }) {
+function Header({ onRequestAuth = () => {} }) {
   const { user, logout } = useAuth();
   const { itemCount } = useCart();
 
   const [showCart, setShowCart] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false); // mobile drawer
 
-  const name =
-    user?.displayName || (user?.email ? user.email.split("@")[0] : "");
-  const greeting = user ? `Hi, ${name}` : "Hi there";
+  const name = useMemo(
+    () => user?.displayName || (user?.email ? user.email.split("@")[0] : ""),
+    [user]
+  );
+  const greeting = useMemo(
+    () => (user ? `Hi, ${name}` : "Hi there"),
+    [user, name]
+  );
 
-  const go = (hash) => {
+  const go = useCallback((hash) => {
     window.location.hash = hash;
     setMenuOpen(false);
     const id = hash.replace("#", "");
     const el = document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
     else window.scrollTo({ top: 0, behavior: "smooth" });
-  };
+  }, []);
 
-  const handleCartClick = () => {
+  const withNav = useCallback(
+    (hash) => (e) => {
+      e.preventDefault();
+      go(hash);
+    },
+    [go]
+  );
+
+  const handleCartClick = useCallback(() => {
     if (!user) {
       onRequestAuth();
       return;
     }
     setShowCart(true);
-  };
+  }, [user, onRequestAuth]);
 
-  const handleUserClick = () => {
+  const handleUserClick = useCallback(() => {
     if (!user) onRequestAuth();
-  };
+  }, [user, onRequestAuth]);
+
+  const handleCloseCart = useCallback(() => setShowCart(false), []);
+
+  const toggleMenu = useCallback(() => setMenuOpen((v) => !v), []);
 
   return (
     <>
@@ -114,10 +131,7 @@ export default function Header({ onRequestAuth = () => {} }) {
           <a
             className="uf3-brand"
             href="#home"
-            onClick={(e) => {
-              e.preventDefault();
-              go("#home");
-            }}
+            onClick={withNav("#home")}
             aria-label="UrbanFrill Home"
           >
             <img
@@ -135,14 +149,7 @@ export default function Header({ onRequestAuth = () => {} }) {
           {/* Center: primary links (hidden on mobile) */}
           <nav className="uf3-primary" aria-label="Primary">
             {PRIMARY.map((p) => (
-              <a
-                key={p.label}
-                href={p.hash}
-                onClick={(e) => {
-                  e.preventDefault();
-                  go(p.hash);
-                }}
-              >
+              <a key={p.label} href={p.hash} onClick={withNav(p.hash)}>
                 {p.label}
               </a>
             ))}
@@ -191,7 +198,7 @@ export default function Header({ onRequestAuth = () => {} }) {
               className={`uf3-burger ${menuOpen ? "is-open" : ""}`}
               aria-label="Toggle menu"
               aria-expanded={menuOpen}
-              onClick={() => setMenuOpen((v) => !v)}
+              onClick={toggleMenu}
             >
               <span></span>
               <span></span>
@@ -229,7 +236,12 @@ export default function Header({ onRequestAuth = () => {} }) {
                         key={sub}
                         className="uf3-sub"
                         role="menuitem"
-                        onClick={() => go(m.hash)}
+                        onClick={() => {
+                          go(m.hash);
+                          document
+                            .querySelectorAll(".uf3-cat")
+                            .forEach((el) => el.blur()); // closes any open dropdown
+                        }}
                       >
                         {sub}
                       </button>
@@ -238,10 +250,7 @@ export default function Header({ onRequestAuth = () => {} }) {
                   <a
                     className="uf3-viewall"
                     href={m.hash}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      go(m.hash);
-                    }}
+                    onClick={withNav(m.hash)}
                   >
                     View all {m.label} →
                   </a>
@@ -263,10 +272,7 @@ export default function Header({ onRequestAuth = () => {} }) {
             <a
               className="uf3-mobbrand"
               href="#home"
-              onClick={(e) => {
-                e.preventDefault();
-                go("#home");
-              }}
+              onClick={withNav("#home")}
               aria-label="UrbanFrill Home"
             >
               <img className="uf3-logo" src={asset("images/logo.png")} alt="" />
@@ -275,7 +281,7 @@ export default function Header({ onRequestAuth = () => {} }) {
             <button
               className="uf3-close"
               aria-label="Close menu"
-              onClick={() => setMenuOpen(false)}
+              onClick={toggleMenu}
             >
               ✕
             </button>
@@ -322,14 +328,7 @@ export default function Header({ onRequestAuth = () => {} }) {
           {/* Primary links */}
           <div className="uf3-mobile-primary">
             {PRIMARY.map((p) => (
-              <a
-                key={p.label}
-                href={p.hash}
-                onClick={(e) => {
-                  e.preventDefault();
-                  go(p.hash);
-                }}
-              >
+              <a key={p.label} href={p.hash} onClick={withNav(p.hash)}>
                 {p.label}
               </a>
             ))}
@@ -349,10 +348,7 @@ export default function Header({ onRequestAuth = () => {} }) {
                   <a
                     className="uf3-accviewall"
                     href={m.hash}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      go(m.hash);
-                    }}
+                    onClick={withNav(m.hash)}
                   >
                     View all {m.label} →
                   </a>
@@ -372,7 +368,9 @@ export default function Header({ onRequestAuth = () => {} }) {
         </div>
       </header>
 
-      <CartDrawer open={showCart} onClose={() => setShowCart(false)} />
+      <CartDrawer open={showCart} onClose={handleCloseCart} />
     </>
   );
 }
+
+export default React.memo(Header);

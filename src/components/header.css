@@ -167,7 +167,9 @@
   height: 2px;
   background: var(--fg);
   border-radius: 2px;
-  transition: transform 0.18s ease, opacity 0.18s ease;
+  transition:
+    transform 0.18s ease,
+    opacity 0.18s ease;
 }
 .uf3-burger.is-open span:nth-child(1) {
   transform: translateY(7px) rotate(45deg);
@@ -233,7 +235,10 @@
   padding: 12px;
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.18s, transform 0.18s, visibility 0.18s;
+  transition:
+    opacity 0.18s,
+    transform 0.18s,
+    visibility 0.18s;
   pointer-events: none;
   z-index: 250;
 }
@@ -472,11 +477,14 @@
     transition: none !important;
   }
 }
+
 /* === Mobile Drawer Slide Animation === */
 .uf3-mobile {
   transform: translateX(100%);
   opacity: 0;
-  transition: transform 0.35s ease, opacity 0.35s ease;
+  transition:
+    transform 0.35s ease,
+    opacity 0.35s ease;
 }
 .uf3-mobile.show {
   transform: translateX(0);
@@ -492,32 +500,23 @@
     align-items: center;
     padding: 10px 14px;
   }
-
-  /* Center logo and tagline perfectly */
   .uf3-brand {
     justify-self: center;
     margin-left: 0;
     text-align: center;
   }
-
   .uf3-brandtext {
     display: block;
     line-height: 1.1;
   }
-
-  /* Slightly larger logo for visibility */
   .uf3-logo {
     width: 36px;
     height: 36px;
   }
-
-  /* Hamburger menu sits flush to the right edge */
   .uf3-actions {
     justify-self: end;
-    margin-right: 8px; /* only tiny gap from screen edge */
+    margin-right: 8px;
   }
-
-  /* Hide user/cart from top bar (they're inside menu) */
   .uf3-hide-on-mobile {
     display: none !important;
   }
@@ -527,43 +526,33 @@
 @media (max-width: 959.98px) {
   .uf3-top {
     display: grid;
-    grid-template-columns: 1fr auto 1fr; /* left spacer | brand | right actions */
+    grid-template-columns: 1fr auto 1fr;
     align-items: center;
     padding: 10px 14px;
   }
-
-  /* Brand always in the middle column */
   .uf3-brand {
     grid-column: 2;
     justify-self: center;
     text-align: center;
     margin: 0;
   }
-
-  /* Bigger logo on mobile */
   .uf3-logo {
     width: 36px;
     height: 36px;
   }
-
-  /* Actions (hamburger) always in the right column */
   .uf3-actions {
     grid-column: 3;
     justify-self: end;
-    margin-right: 8px; /* tiny edge gap */
+    margin-right: 8px;
     display: flex;
     gap: 6px;
   }
-
-  /* Only show burger in the top bar on mobile */
   .uf3-burger {
     display: flex;
   }
   .uf3-hide-on-mobile {
     display: none !important;
   }
-
-  /* Hide desktop nav rows on mobile */
   .uf3-primary {
     display: none !important;
   }
@@ -571,30 +560,25 @@
     display: none !important;
   }
 }
+
 /* === FINAL MOBILE HEADER FIX === */
 @media (max-width: 959.98px) {
   .uf3-top {
     display: grid;
-    grid-template-columns: 1fr auto 1fr; /* left spacer | brand | right actions */
+    grid-template-columns: 1fr auto 1fr;
     align-items: center;
     padding: 10px 14px;
   }
-
-  /* Center brand block */
   .uf3-brand {
     grid-column: 2;
     justify-self: center;
     text-align: center;
     margin: 0;
   }
-
-  /* Logo size & spacing */
   .uf3-logo {
     width: 36px;
     height: 36px;
   }
-
-  /* Hamburger/menu on right edge */
   .uf3-actions {
     grid-column: 3;
     justify-self: end;
@@ -603,24 +587,20 @@
     align-items: center;
     gap: 6px;
   }
-
-  /* Only hamburger visible */
   .uf3-burger {
     display: flex;
   }
   .uf3-hide-on-mobile {
     display: none !important;
   }
-
-  /* Hide desktop nav and category rows */
   .uf3-primary,
   .uf3-catsrow {
     display: none !important;
   }
 }
+
 /* === Perfect mobile logo & tagline alignment === */
 @media (max-width: 959.98px) {
-  /* Center entire brand block */
   .uf3-brand {
     display: flex;
     flex-direction: column;
@@ -629,34 +609,26 @@
     justify-self: center;
     grid-column: 2;
   }
-
-  /* Adjust logo size and spacing */
   .uf3-logo {
     width: 36px;
     height: 36px;
-    margin-bottom: 4px; /* space between logo and text */
+    margin-bottom: 4px;
   }
-
-  /* Stack title and tagline */
   .uf3-brandtext {
     display: flex;
     flex-direction: column;
     align-items: center;
     line-height: 1.1;
   }
-
   .uf3-title {
     font-size: 1rem;
     font-weight: 800;
-    margin-bottom: 2px; /* small gap before tagline */
+    margin-bottom: 2px;
   }
-
   .uf3-tag {
     font-size: 0.8rem;
     color: #6b7280;
   }
-
-  /* Keep hamburger on far right */
   .uf3-actions {
     grid-column: 3;
     justify-self: end;
@@ -665,6 +637,7 @@
     align-items: center;
   }
 }
+
 /* === FINAL MOBILE HEADER ALIGNMENT: logo left, text stacked, menu right === */
 @media (max-width: 959.98px) {
   .uf3-top {
@@ -673,8 +646,6 @@
     align-items: center;
     padding: 10px 14px;
   }
-
-  /* Brand: logo left, text stacked beside it */
   .uf3-brand {
     grid-column: 2;
     display: flex;
@@ -684,34 +655,27 @@
     text-align: left;
     gap: 8px;
   }
-
   .uf3-logo {
     width: 36px;
     height: 36px;
   }
-
-  /* Text next to logo: UrbanFrill above tagline */
   .uf3-brandtext {
     display: flex;
     flex-direction: column;
     justify-content: center;
     line-height: 1.1;
   }
-
   .uf3-title {
     font-size: 1rem;
     font-weight: 800;
     color: #0f172a;
     margin: 0;
   }
-
   .uf3-tag {
     font-size: 0.8rem;
     color: #6b7280;
     margin-top: 2px;
   }
-
-  /* Hamburger icon fixed to far right */
   .uf3-actions {
     grid-column: 3;
     justify-self: end;
@@ -720,19 +684,118 @@
     align-items: center;
     gap: 6px;
   }
-
-  /* Only hamburger visible on top bar */
   .uf3-burger {
     display: flex;
   }
   .uf3-hide-on-mobile {
     display: none !important;
   }
-
-  /* Hide desktop rows */
   .uf3-primary,
   .uf3-catsrow {
     display: none !important;
   }
 }
 
+/* === PATCH: reachable hover menu + avatar alignment (append only) === */
+
+/* Let the dropdown render outside header rows if needed */
+.uf3-header,
+.uf3-top,
+.uf3-catsrow {
+  overflow: visible;
+}
+
+/* Make sure each category is a positioning context (some builds drop this) */
+.uf3-cat {
+  position: relative;
+}
+
+/* Place the panel right under the button and ensure it is interactable & above content */
+.uf3-panel {
+  top: 100%;
+  transform: translate(-50%, 8px); /* small offset below trigger */
+  z-index: 4000;
+  pointer-events: auto;
+}
+
+/* Keep it open when hovering into the panel or using keyboard */
+.uf3-cat:hover .uf3-panel,
+.uf3-cat:focus-within .uf3-panel,
+.uf3-panel:hover {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, 8px);
+  pointer-events: auto;
+}
+
+/* Hover bridge: removes any tiny gap between trigger and panel */
+.uf3-panel::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -10px;
+  height: 10px;
+}
+
+/* Center the categories row neatly (keeps your look) */
+.uf3-cats {
+  width: min(1200px, 100%);
+  margin-inline: auto;
+  justify-content: center;
+}
+
+/* --- Avatar/button vertical alignment in upper nav --- */
+.uf3-actions {
+  align-items: center;
+}
+
+.uf3-user {
+  display: inline-flex;
+  align-items: center;
+  line-height: 1; /* remove baseline drift */
+}
+
+.uf3-user img {
+  display: block; /* fixes baseline bump so it centers perfectly */
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  object-fit: cover;
+}
+
+/* If you also want a slightly smaller avatar inside the mobile drawer button */
+.uf3-mob-userbtn img {
+  display: block;
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  object-fit: cover;
+}
+
+/* Ensure header links change color only (no underline) */
+.uf3-header a {
+  text-decoration: none;
+}
+.uf3-header a:hover {
+  text-decoration: none;
+  color: #0d9488;
+}
+
+/* === PATCH: auto-close dropdown after click === */
+
+/* prevent dropdowns from staying visible after click */
+.uf3-cat:active .uf3-panel {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translate(-50%, 6px);
+}
+
+/* smooth hide transition on click */
+.uf3-panel {
+  transition:
+    opacity 0.18s ease,
+    transform 0.18s ease,
+    visibility 0.18s ease;
+}

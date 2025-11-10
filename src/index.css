@@ -1,56 +1,183 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* ================================
+   UrbanFrill — Global Styles (pure CSS)
+   Safe: no class renames; no component coupling
+   =========================================== */
 
-:root {
-  --bg: #FAF9F7;
-  --charcoal: #222222;
-  --amber: #C4892C;
-  --wa: #25D366;
+/* 1) Reset (minimal) */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
-
-html, body, #root { height: 100%; }
-
+html,
+body,
+#root {
+  height: 100%;
+}
+html,
 body {
-  @apply bg-[var(--bg)];
-  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
-  color: var(--charcoal);
+  margin: 0;
+  padding: 0;
 }
 
-/* Use Playfair for headings */
-.h-playfair { font-family: 'Playfair Display', serif; }
+/* 2) Design tokens */
+:root {
+  --uf-font-sans:
+    "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial, "Noto Sans",
+    "Helvetica Neue", sans-serif;
+  --uf-font-serif: "Playfair Display", Georgia, "Times New Roman", serif;
 
+  --uf-text: #1a1a1a;
+  --uf-muted: #666;
+  --uf-bg: #ffffff;
+  --uf-surface: #f7f7f7;
+  --uf-border: #e6e6e6;
+
+  --uf-primary: #c4892c; /* amber */
+  --uf-primary-contrast: #ffffff; /* white */
+  --uf-accent: #222222; /* charcoal */
+
+  --uf-radius: 12px;
+  --uf-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
+}
+
+/* 3) Base typography */
+html {
+  color: var(--uf-text);
+  background: var(--uf-bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+body {
+  font-family: var(--uf-font-sans);
+  font-size: 16px;
+  line-height: 1.5;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--uf-font-serif);
+  margin: 0 0 0.5em;
+  line-height: 1.2;
+}
+p {
+  margin: 0 0 1rem;
+}
+
+/* 4) Links & controls */
+a {
+  color: inherit;
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+button {
+  cursor: pointer;
+  border: 1px solid var(--uf-border);
+  background: var(--uf-bg);
+  border-radius: 8px;
+  padding: 0.6rem 0.9rem;
+}
+button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* 5) Layout protections */
+#root {
+  overflow: auto;
+} /* scroll-to-top utilities work */
+html,
+body {
+  width: 100%;
+  overflow-x: hidden;
+} /* prevent horizontal scroll */
+
+/* 6) Media defaults */
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+img {
+  height: auto;
+}
+
+/* 7) Utilities (non-invasive) */
+.uf-container {
+  width: min(1100px, 100%);
+  margin-inline: auto;
+  padding-inline: 18px;
+}
+.uf-surface {
+  background: var(--uf-surface);
+  border: 1px solid var(--uf-border);
+  border-radius: var(--uf-radius);
+  box-shadow: var(--uf-shadow);
+}
+.uf-visually-hidden {
+  position: absolute !important;
+  height: 1px;
+  width: 1px;
+  overflow: hidden;
+  clip: rect(1px, 1px, 1px, 1px);
+  white-space: nowrap;
+}
+
+/* 8) Focus & smoothness */
+:focus-visible {
+  outline: 2px solid var(--uf-primary);
+  outline-offset: 2px;
+}
 html {
   scroll-behavior: smooth;
 }
 
-section {
-  scroll-margin-top: 80px; /* keeps content from hiding under header */
+/* 9) Small global fixes */
+details > summary {
+  list-style: none;
+  cursor: pointer;
+}
+details > summary::-webkit-details-marker {
+  display: none;
+}
+.uf-break {
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
-/* Prevent unwanted horizontal scrolling globally */
-html, body {
-  overflow-x: hidden;
-  width: 100%;
+/* Chips (optional helper) */
+.uf-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5ch;
+  border: 1px solid var(--uf-border);
+  background: #fff;
+  border-radius: 999px;
+  padding: 0.35rem 0.7rem;
 }
 
-a{
-  text-decoration: none;
+/* Primary button helper */
+.uf-btn-primary {
+  background: var(--uf-primary);
+  color: var(--uf-primary-contrast);
+  border-color: var(--uf-primary);
 }
-
-html { scroll-behavior: auto !important; }
-
-/* Make sure the main container can be scrolled programmatically */
-html, body, #root { height: 100%; }
-#root { overflow: auto; }
-
-/* --- Global layout fixes --- */
-html, body {
-  width: 100%;
-  overflow-x: hidden;   /* 🚫 stops horizontal scrolling */
-}
-
-#root, .app, .uf-container {
-  max-width: 100%;
-  overflow-x: clip;     /* modern + smoother than hidden */
+.uf-btn-primary:hover {
+  filter: brightness(0.95);
 }

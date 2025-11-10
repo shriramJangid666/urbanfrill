@@ -1,6 +1,6 @@
 // src/main.jsx
 import React from "react";
-import ReactDOM from "react-dom/client";   // ✅ this line is required
+import ReactDOM from "react-dom/client";   // required
 import App from "./App";
 import { AuthProvider } from "./context/AuthContext";
 import { CartProvider } from "./context/CartContext";
