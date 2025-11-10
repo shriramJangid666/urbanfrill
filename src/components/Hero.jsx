@@ -1,9 +1,10 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useState, useRef } from "react";
 import "./hero.css";
 import { asset } from "../utils/asset";
 
 const PHONE = "917821085631";
-const ROTATE_MS = 4500; // per-slide duration (also drives the progress bar)
+const ROTATE_MS = 5000; // per-slide duration
+const CLICK_PAUSE_MS = 10000; // pause 10s after user click
 
 const CATS = [
   { id: "featured", label: "Featured", anchor: "#products" },
@@ -15,7 +16,6 @@ const CATS = [
   { id: "flooring", label: "Wood & PVC Flooring", anchor: "#flooring" },
 ];
 
-// hero images available in /public/images
 const fileMap = {
   curtains: "hero-curtain.jpg",
   wallpapers: "hero-wallpaper.jpg",
@@ -63,114 +63,137 @@ const copy = {
   },
 };
 
+function FeaturedSlide() {
+  return (
+    <div className="hero-collage">
+      <figure className="collage-big card">
+        <img
+          src={asset("images/hero-left.jpg")}
+          alt="Featured large"
+          loading="eager"
+        />
+      </figure>
+      <figure className="collage-small top card">
+        <img
+          src={asset("images/hero-topright.jpg")}
+          alt="Featured detail 1"
+          loading="lazy"
+        />
+      </figure>
+      <figure className="collage-small bottom card">
+        <img
+          src={asset("images/hero-bottomright.jpg")}
+          alt="Featured detail 2"
+          loading="lazy"
+        />
+      </figure>
+    </div>
+  );
+}
+
+function SingleSlide({ id, label }) {
+  const src = asset(`images/${fileMap[id]}`);
+  return (
+    <figure className="hero-single card">
+      <img src={src} alt={label} loading="eager" />
+      <figcaption className="badge">{label}</figcaption>
+      <div className="scrim" />
+    </figure>
+  );
+}
+
 export default function Hero() {
   const [active, setActive] = useState("featured");
-  const [paused, setPaused] = useState(false);
-  const [progress, setProgress] = useState(0); // 0–100
-  const wrapRef = useRef(null);
+  const [prev, setPrev] = useState(null);
+  const [isPaused, setIsPaused] = useState(false);
+  const pauseTimerRef = useRef(null);
+  const rotateTimerRef = useRef(null);
 
   const idx = useMemo(() => CATS.findIndex((c) => c.id === active), [active]);
-  const next = () => setActive(CATS[(idx + 1) % CATS.length].id);
-  const prev = () => setActive(CATS[(idx - 1 + CATS.length) % CATS.length].id);
+  const nextId = CATS[(idx + 1) % CATS.length].id;
 
-  // progress bar timer
-  useEffect(() => {
-    setProgress(0);
-    if (paused) return;
+  const goTo = (id, pauseAfterClick = false) => {
+    if (id === active) return;
+    setPrev(active);
+    setActive(id);
 
-    const started = Date.now();
-    const tick = setInterval(() => {
-      const elapsed = Date.now() - started;
-      const pct = Math.min(100, (elapsed / ROTATE_MS) * 100);
-      setProgress(pct);
-      if (pct >= 100) {
-        clearInterval(tick);
-        next();
-      }
-    }, 50);
+    if (pauseAfterClick) {
+      // clear any previous timers
+      if (pauseTimerRef.current) clearTimeout(pauseTimerRef.current);
+      if (rotateTimerRef.current) clearTimeout(rotateTimerRef.current);
 
-    return () => clearInterval(tick);
-  }, [active, paused]);
-
-  // keyboard support (←/→)
-  useEffect(() => {
-    const el = wrapRef.current;
-    if (!el) return;
-    const onKey = (e) => {
-      if (e.key === "ArrowRight") next();
-      if (e.key === "ArrowLeft") prev();
-    };
-    el.addEventListener("keydown", onKey);
-    return () => el.removeEventListener("keydown", onKey);
-  }, [idx]);
-
-  // media sources
-  const featured = {
-    big: asset("images/hero-left.jpg"),
-    top: asset("images/hero-topright.jpg"),
-    bottom: asset("images/hero-bottomright.jpg"),
+      setIsPaused(true);
+      pauseTimerRef.current = setTimeout(() => {
+        setIsPaused(false); // resume auto after 10s
+      }, CLICK_PAUSE_MS);
+    }
   };
-  const single =
-    active !== "featured" ? asset(`images/${fileMap[active]}`) : null;
+
+  // Auto-rotate (only runs when not paused)
+  useEffect(() => {
+    if (isPaused) return;
+    if (rotateTimerRef.current) clearTimeout(rotateTimerRef.current);
+
+    rotateTimerRef.current = setTimeout(() => {
+      setPrev(active);
+      setActive(nextId);
+    }, ROTATE_MS);
+
+    return () => {
+      if (rotateTimerRef.current) clearTimeout(rotateTimerRef.current);
+    };
+  }, [active, isPaused, nextId]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (pauseTimerRef.current) clearTimeout(pauseTimerRef.current);
+      if (rotateTimerRef.current) clearTimeout(rotateTimerRef.current);
+    };
+  }, []);
 
   const currentCat = CATS[idx];
   const { title, desc, cta } = copy[active];
 
   return (
     <section className="hero">
-      <div
-        className="hero-container"
-        ref={wrapRef}
-        tabIndex={0}
-        onMouseEnter={() => setPaused(true)}
-        onMouseLeave={() => setPaused(false)}
-        onFocus={() => setPaused(true)}
-        onBlur={() => setPaused(false)}
-      >
-        {/* LEFT: uniform media box for all modes */}
+      <div className="hero-container">
+        {/* LEFT: slider with right→left motion */}
         <div className="hero-media">
-          {active === "featured" ? (
-            <div className="hero-collage" aria-live="polite">
-              <figure className="collage-big card">
-                <img
-                  key="feat-big"
-                  src={featured.big}
-                  alt="Featured large"
-                  loading="eager"
-                />
-              </figure>
-              <figure className="collage-small top card">
-                <img
-                  key="feat-top"
-                  src={featured.top}
-                  alt="Featured detail 1"
-                  loading="lazy"
-                />
-              </figure>
-              <figure className="collage-small bottom card">
-                <img
-                  key="feat-bot"
-                  src={featured.bottom}
-                  alt="Featured detail 2"
-                  loading="lazy"
-                />
-              </figure>
-            </div>
-          ) : (
-            <figure className="hero-single card" aria-live="polite">
-              <img
-                key={active}
-                src={single}
-                alt={currentCat.label}
-                loading="eager"
-              />
-              <figcaption className="badge">{currentCat.label}</figcaption>
-              <div className="scrim" />
-            </figure>
-          )}
+          <div
+            className={`slider ${prev ? "animating two" : "single"}`}
+            onAnimationEnd={() => setPrev(null)}
+          >
+            {prev && (
+              <div className="slide prev">
+                {prev === "featured" ? (
+                  <FeaturedSlide />
+                ) : (
+                  <SingleSlide
+                    id={prev}
+                    label={CATS.find((c) => c.id === prev)?.label}
+                  />
+                )}
+              </div>
+            )}
 
-          {/* dots (active dot fills with progress) */}
-          <div className="dots" role="tablist" aria-label="Slides">
+            <div className={`slide current ${prev ? "with-prev" : ""}`}>
+              {active === "featured" ? (
+                <FeaturedSlide />
+              ) : (
+                <SingleSlide id={active} label={currentCat.label} />
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* RIGHT: text + category chips */}
+        <div className="hero-text">
+          <div
+            className="hero-tabs"
+            role="tablist"
+            aria-label="Hero categories"
+          >
             {CATS.map((c) => {
               const isActive = active === c.id;
               return (
@@ -178,36 +201,14 @@ export default function Hero() {
                   key={c.id}
                   role="tab"
                   aria-selected={isActive}
-                  className={`dot ${isActive ? "active" : ""}`}
-                  onClick={() => setActive(c.id)}
+                  className={`tab ${isActive ? "active" : ""}`}
+                  onClick={() => goTo(c.id, true)} // pause 10s on click
                   title={c.label}
-                  // feed progress (0–100) into CSS var for conic-gradient
-                  style={isActive ? { ["--pct"]: `${progress}%` } : undefined}
-                />
+                >
+                  <span className="tab-label">{c.label}</span>
+                </button>
               );
             })}
-          </div>
-        </div>
-
-        {/* RIGHT: text changes with image */}
-        <div className="hero-text">
-          {/* chips hidden on mobile via CSS */}
-          <div
-            className="hero-tabs"
-            role="tablist"
-            aria-label="Hero categories"
-          >
-            {CATS.map((c) => (
-              <button
-                key={c.id}
-                role="tab"
-                aria-selected={active === c.id}
-                className={`tab ${active === c.id ? "active" : ""}`}
-                onClick={() => setActive(c.id)}
-              >
-                {c.label}
-              </button>
-            ))}
           </div>
 
           <h2>{title}</h2>
