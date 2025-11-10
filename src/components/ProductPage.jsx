@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useLayoutEffect } from "react";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/useAuth";
 import { useCart } from "../context/CartContext";
 import { productImg, asset } from "../utils/asset";
 import { forceTop } from "../utils/scrollToTop";

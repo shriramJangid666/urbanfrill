@@ -9,7 +9,7 @@ import Footer from "./components/Footer";
 import ScrollReveal from "./components/ScrollReveal";
 import ContactForm from "./components/ContactForm";
 import AuthModal from "./components/AuthModal";
-import { useAuth } from "./context/AuthContext";
+import { useAuth } from "./context/useAuth";
 import "./index.css";
 import PRODUCTS from "./data/products"; // your data file
 

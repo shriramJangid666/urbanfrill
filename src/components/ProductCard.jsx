@@ -1,6 +1,6 @@
 // src/components/ProductCard.jsx
 import React from "react";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/useAuth";
 import { useCart } from "../context/CartContext";
 import { productImg, productPath, asset } from "../utils/asset";
 import "./product-card.css";

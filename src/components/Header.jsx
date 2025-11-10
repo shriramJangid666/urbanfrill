@@ -1,6 +1,6 @@
 // src/components/Header.jsx
 import React, { useState } from "react";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/useAuth";
 import { useCart } from "../context/CartContext";
 import CartDrawer from "./CartDrawer";
 import { asset } from "../utils/asset";

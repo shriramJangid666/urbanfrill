@@ -1,6 +1,6 @@
 // src/components/AuthForm.jsx
 import React, { useState } from "react";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/useAuth";
 import "./auth.css";
 
 export default function AuthForm() {

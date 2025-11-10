@@ -1,6 +1,6 @@
 // src/context/CartContext.jsx
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { useAuth } from "./AuthContext";
+import { useAuth } from "../context/useAuth";
 import { productPath } from "../utils/asset"; // ✅ store clean path
 
 const CartContext = createContext();

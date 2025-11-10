@@ -10,8 +10,11 @@ import {
   signInWithPopup,
 } from "firebase/auth";
 import { auth } from "../firebase";
+import { AuthContext } from "./AuthContextValue";
 
-const AuthContext = createContext();
+
+// const AuthContext = createContext();
+
 export const useAuth = () => useContext(AuthContext);
 
 export function AuthProvider({ children }) {
