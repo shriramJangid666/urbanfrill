@@ -4,7 +4,6 @@ import { asset } from "../utils/asset";
 
 const PHONE = "917821085631";
 const ROTATE_MS = 5000; // per-slide duration
-const CLICK_PAUSE_MS = 10000; // pause 10s after user click
 
 const CATS = [
   { id: "featured", label: "Featured", anchor: "#products" },
@@ -63,14 +62,16 @@ const copy = {
   },
 };
 
-function FeaturedSlide() {
+function FeaturedSlide({ priority = false }) {
   return (
     <div className="hero-collage">
       <figure className="collage-big card">
         <img
           src={asset("images/hero-left.jpg")}
           alt="Featured large"
-          loading="eager"
+          loading={priority ? "eager" : "lazy"}
+          decoding="async"
+          fetchPriority={priority ? "high" : "auto"}
         />
       </figure>
       <figure className="collage-small top card">
@@ -78,6 +79,7 @@ function FeaturedSlide() {
           src={asset("images/hero-topright.jpg")}
           alt="Featured detail 1"
           loading="lazy"
+          decoding="async"
         />
       </figure>
       <figure className="collage-small bottom card">
@@ -85,17 +87,24 @@ function FeaturedSlide() {
           src={asset("images/hero-bottomright.jpg")}
           alt="Featured detail 2"
           loading="lazy"
+          decoding="async"
         />
       </figure>
     </div>
   );
 }
 
-function SingleSlide({ id, label }) {
+function SingleSlide({ id, label, priority = false }) {
   const src = asset(`images/${fileMap[id]}`);
   return (
     <figure className="hero-single card">
-      <img src={src} alt={label} loading="eager" />
+      <img
+        src={src}
+        alt={label}
+        loading={priority ? "eager" : "lazy"}
+        decoding="async"
+        fetchpriority={priority ? "high" : "auto"}
+      />
       <figcaption className="badge">{label}</figcaption>
       <div className="scrim" />
     </figure>
@@ -103,57 +112,36 @@ function SingleSlide({ id, label }) {
 }
 
 export default function Hero() {
-  const [active, setActive] = useState("featured");
+  // start on a random category each visit (looks fresh)
+  const [active, setActive] = useState(() => {
+    const i = Math.floor(Math.random() * CATS.length);
+    return CATS[i].id;
+  });
   const [prev, setPrev] = useState(null);
-  const [isPaused, setIsPaused] = useState(false);
-  const pauseTimerRef = useRef(null);
   const rotateTimerRef = useRef(null);
 
   const idx = useMemo(() => CATS.findIndex((c) => c.id === active), [active]);
   const nextId = CATS[(idx + 1) % CATS.length].id;
+  const currentCat = CATS[idx];
+  const { title, desc, cta } = copy[active];
 
-  const goTo = (id, pauseAfterClick = false) => {
-    if (id === active) return;
-    setPrev(active);
-    setActive(id);
-
-    if (pauseAfterClick) {
-      // clear any previous timers
-      if (pauseTimerRef.current) clearTimeout(pauseTimerRef.current);
-      if (rotateTimerRef.current) clearTimeout(rotateTimerRef.current);
-
-      setIsPaused(true);
-      pauseTimerRef.current = setTimeout(() => {
-        setIsPaused(false); // resume auto after 10s
-      }, CLICK_PAUSE_MS);
-    }
-  };
-
-  // Auto-rotate (only runs when not paused)
+  // Auto-rotate
   useEffect(() => {
-    if (isPaused) return;
     if (rotateTimerRef.current) clearTimeout(rotateTimerRef.current);
-
     rotateTimerRef.current = setTimeout(() => {
       setPrev(active);
       setActive(nextId);
     }, ROTATE_MS);
+    return () => rotateTimerRef.current && clearTimeout(rotateTimerRef.current);
+  }, [active, nextId]);
 
-    return () => {
-      if (rotateTimerRef.current) clearTimeout(rotateTimerRef.current);
-    };
-  }, [active, isPaused, nextId]);
+  // Cleanup
+  useEffect(
+    () => () => rotateTimerRef.current && clearTimeout(rotateTimerRef.current),
+    []
+  );
 
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      if (pauseTimerRef.current) clearTimeout(pauseTimerRef.current);
-      if (rotateTimerRef.current) clearTimeout(rotateTimerRef.current);
-    };
-  }, []);
-
-  const currentCat = CATS[idx];
-  const { title, desc, cta } = copy[active];
+  const isFeatured = active === "featured";
 
   return (
     <section className="hero">
@@ -178,39 +166,17 @@ export default function Hero() {
             )}
 
             <div className={`slide current ${prev ? "with-prev" : ""}`}>
-              {active === "featured" ? (
-                <FeaturedSlide />
+              {isFeatured ? (
+                <FeaturedSlide priority />
               ) : (
-                <SingleSlide id={active} label={currentCat.label} />
+                <SingleSlide id={active} label={currentCat.label} priority />
               )}
             </div>
           </div>
         </div>
 
-        {/* RIGHT: text + category chips */}
+        {/* RIGHT: text only (chips removed) */}
         <div className="hero-text">
-          <div
-            className="hero-tabs"
-            role="tablist"
-            aria-label="Hero categories"
-          >
-            {CATS.map((c) => {
-              const isActive = active === c.id;
-              return (
-                <button
-                  key={c.id}
-                  role="tab"
-                  aria-selected={isActive}
-                  className={`tab ${isActive ? "active" : ""}`}
-                  onClick={() => goTo(c.id, true)} // pause 10s on click
-                  title={c.label}
-                >
-                  <span className="tab-label">{c.label}</span>
-                </button>
-              );
-            })}
-          </div>
-
           <h2>{title}</h2>
           <p>{desc}</p>
 

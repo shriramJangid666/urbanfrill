@@ -1,34 +1,389 @@
-/* product-filter.css */
-.pf-chip {
+/* Sidebar filter */
+.pf-aside {
+  position: sticky;
+  top: 82px; /* sits under your sticky header */
+  align-self: start;
+}
+
+.pf-aside-inner {
   background: #fff;
-  color: #333;
-  border: 1px solid #ddd;
-  border-radius: 20px;
-  padding: 8px 18px;
+  border: 1px solid #e9eef6;
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 8px 20px rgba(12, 12, 12, 0.04);
+}
+
+.pf-title {
+  margin: 4px 6px 10px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #111;
+}
+
+.pf-list {
+  display: grid;
+  gap: 8px;
+}
+
+.pf-item {
+  width: 100%;
+  text-align: left;
+  background: #fff;
+  border: 1px solid #e9eef6;
+  border-radius: 10px;
+  padding: 10px 12px;
   cursor: pointer;
-  transition: all 0.2s ease;
-  font-size: 15px;
-  font-weight: 500;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+  font-size: 0.95rem;
+  color: #333;
 }
-
-.pf-chip:hover {
+.pf-item:hover {
   border-color: #0d9488;
-  color: #0d9488;
-  background: #f9fffd;
+  background: #f6fffc;
 }
-
-.pf-chip.active {
+.pf-item.active {
   background: #0d9488;
   color: #fff;
   border-color: #0d9488;
-  box-shadow: 0 2px 6px rgba(13,148,136,0.3);
-  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(13, 148, 136, 0.25);
 }
 
-@media (max-width: 600px) {
-  .pf-chip {
-    font-size: 14px;
-    padding: 7px 14px;
+/* Mobile: sidebar becomes a simple horizontal row above products */
+@media (max-width: 880px) {
+  .pf-aside {
+    position: static;
+  }
+  .pf-aside-inner {
+    border: none;
+    box-shadow: none;
+    padding: 0;
+  }
+  .pf-list {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 6px;
+  }
+  .pf-item {
+    white-space: nowrap;
+  }
+}
+
+/* Space & compact look */
+.pf-aside {
+  position: sticky;
+  top: 82px;
+  align-self: start;
+}
+.pf-aside-inner {
+  background: #fff;
+  border: 1px solid #e9eef6;
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 8px 20px rgba(12, 12, 12, 0.04);
+}
+.pf-title {
+  margin: 4px 6px 10px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #111;
+}
+.pf-list {
+  display: grid;
+  gap: 8px;
+}
+.pf-item {
+  width: 100%;
+  text-align: left;
+  background: #fff;
+  border: 1px solid #e9eef6;
+  border-radius: 10px;
+  padding: 10px 12px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  color: #333;
+}
+.pf-item:hover {
+  border-color: #0d9488;
+  background: #f6fffc;
+}
+.pf-item.active {
+  background: #0d9488;
+  color: #fff;
+  border-color: #0d9488;
+  box-shadow: 0 2px 8px rgba(13, 148, 136, 0.25);
+}
+
+/* New: price + sort */
+.pf-block {
+  margin-top: 8px;
+}
+.pf-price {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.pf-price label {
+  display: grid;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: #555;
+}
+.pf-price input {
+  width: 100%;
+  padding: 10px 10px;
+  border-radius: 10px;
+  border: 1px solid #e9eef6;
+  outline: none;
+  background: #fff;
+}
+.pf-price input:focus {
+  border-color: #0d9488;
+  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.12);
+}
+.pf-hint {
+  color: #777;
+  font-size: 0.82rem;
+  margin-top: 6px;
+}
+
+.pf-select {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #e9eef6;
+  background: #fff;
+}
+.pf-select:focus {
+  border-color: #0d9488;
+  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.12);
+}
+
+/* Mobile: sidebar collapses to row */
+@media (max-width: 880px) {
+  .pf-aside {
+    position: static;
+  }
+  .pf-aside-inner {
+    border: none;
+    box-shadow: none;
+    padding: 0;
+  }
+  .pf-list {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 6px;
+  }
+  .pf-item {
+    white-space: nowrap;
+  }
+  .pf-price {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* === PATCH: sidebar flush-left and compact === */
+.pf-aside {
+  margin-left: 0;
+} /* no unintended inset */
+.pf-aside-inner {
+  padding: 10px;
+} /* slightly tighter */
+.pf-item {
+  padding: 9px 10px;
+} /* compact list items */
+
+/* Keep mobile filter visible while scrolling (horizontal chips) */
+@media (max-width: 880px) {
+  .pf-aside {
+    position: sticky;
+    top: 74px;
+    z-index: 1;
+  }
+  .pf-aside-inner {
+    background: transparent;
+  }
+  .pf-list {
+    background: #fbfcfe;
+    padding: 6px 0 8px;
+    margin: 0;
+  }
+}
+
+/* Tiny devices: avoid overflow shadows */
+@media (max-width: 560px) {
+  .pf-item {
+    padding: 8px 10px;
+  }
+}
+
+/* === SIDEBAR: compact, flush-left visual, clean mobile === */
+
+/* Compact block */
+.pf-aside {
+  position: sticky;
+  top: 82px;
+  align-self: start;
+}
+.pf-aside-inner {
+  background: #fff;
+  border: 1px solid #e9eef6;
+  border-radius: 12px;
+  padding: 10px;
+  box-shadow: 0 8px 20px rgba(12, 12, 12, 0.04);
+}
+.pf-title {
+  margin: 4px 6px 10px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #111;
+}
+.pf-list {
+  display: grid;
+  gap: 8px;
+}
+.pf-item {
+  padding: 9px 10px;
+  background: #fff;
+  border: 1px solid #e9eef6;
+  border-radius: 10px;
+  text-align: left;
+  cursor: pointer;
+  color: #333;
+}
+.pf-item:hover {
+  border-color: #0d9488;
+  background: #f6fffc;
+}
+.pf-item.active {
+  background: #0d9488;
+  color: #fff;
+  border-color: #0d9488;
+  box-shadow: 0 2px 8px rgba(13, 148, 136, 0.25);
+}
+
+/* Price + sort (from earlier step) keep unchanged */
+
+/* ---------- Mobile behavior ---------- */
+@media (max-width: 880px) {
+  /* Sidebar becomes a sticky horizontal chip row under the header */
+  .pf-aside {
+    position: sticky;
+    top: 74px;
+    z-index: 2;
+  }
+  .pf-aside-inner {
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    padding: 0;
+  }
+  .pf-title {
+    display: none;
+  } /* keep it minimal on mobile */
+  .pf-list {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 8px 0 10px;
+    margin: 0 -10px; /* full-bleed row */
+  }
+  .pf-item {
+    white-space: nowrap;
+    padding: 8px 12px;
+    border-radius: 999px;
+  }
+  /* Price & sort stack under chips */
+  .pf-block {
+    margin: 0 0 10px 0;
+  }
+  .pf-price {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+}
+
+/* Tiny devices: tighter paddings */
+@media (max-width: 520px) {
+  .pf-item {
+    padding: 8px 10px;
+  }
+}
+
+/* Keep sidebar tidy and inside page */
+.pf-aside {
+  position: sticky;
+  top: 82px;
+  align-self: start;
+}
+.pf-aside-inner {
+  background: #fff;
+  border: 1px solid #e9eef6;
+  border-radius: 12px;
+  padding: 10px;
+  box-shadow: 0 8px 20px rgba(12, 12, 12, 0.04);
+}
+
+/* Mobile: chip row look (used inside drawer too, still fine) */
+@media (max-width: 880px) {
+  .pf-aside {
+    position: static;
+  }
+  .pf-aside-inner {
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    padding: 0;
+  }
+  .pf-title {
+    display: none;
+  }
+  .pf-list {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 8px 0 10px;
+  }
+  .pf-item {
+    white-space: nowrap;
+    padding: 8px 12px;
+    border-radius: 999px;
+  }
+}
+
+/* === Mobile: hide inline sidebar; use drawer only === */
+@media (max-width: 880px) {
+  /* do not show the sidebar under search by default */
+  .pf-aside {
+    display: none;
+  }
+
+  /* inside the slide-in drawer, show the same component normally */
+  .filters-drawer .pf-aside {
+    display: block;
+    position: static;
+  }
+  .filters-drawer .pf-aside-inner {
+    background: #fff;
+    border: 1px solid #e9eef6;
+    border-radius: 12px;
+    padding: 12px;
+    box-shadow: 0 8px 20px rgba(12, 12, 12, 0.04);
+  }
+  .filters-drawer .pf-title {
+    display: block;
+  }
+  .filters-drawer .pf-list {
+    display: grid; /* a proper list, not chips */
+    gap: 8px;
+    overflow: visible;
+    padding: 0;
+  }
+  .filters-drawer .pf-item {
+    white-space: normal;
+    border-radius: 10px;
+    padding: 10px 12px;
   }
 }

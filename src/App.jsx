@@ -1,5 +1,5 @@
 // src/App.jsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useCallback, useState } from "react";
 import Header from "./components/Header";
 import Hero from "./components/Hero";
 import ProductCard from "./components/ProductCard";
@@ -11,34 +11,48 @@ import ContactForm from "./components/ContactForm";
 import AuthModal from "./components/AuthModal";
 import { useAuth } from "./context/useAuth";
 import "./index.css";
-import PRODUCTS from "./data/products"; // your data file
+import PRODUCTS from "./data/products";
+
+/* stable style objects */
+const PF_GRID_STYLE = { maxWidth: 1100, margin: "20px auto" };
+const ABOUT_WRAPPER_STYLE = {
+  maxWidth: "900px",
+  margin: "0 auto",
+  padding: "60px 20px",
+  textAlign: "center",
+};
+const ABOUT_H2_STYLE = {
+  fontSize: "2.2rem",
+  color: "#222",
+  marginBottom: "16px",
+};
+const ABOUT_P_STYLE = { color: "#555", lineHeight: "1.8", fontSize: "1.05rem" };
 
 export default function App() {
   const { user } = useAuth();
 
-  // modal control for login/signup
+  // Auth modal
   const [showAuthModal, setShowAuthModal] = useState(false);
-
-  // close modal automatically after login
   useEffect(() => {
     if (user && showAuthModal) setShowAuthModal(false);
   }, [user, showAuthModal]);
 
+  // No horizontal scroll
   useEffect(() => {
+    const prev = document.body.style.overflowX;
     document.body.style.overflowX = "hidden";
-    return () => (document.body.style.overflowX = "");
+    return () => (document.body.style.overflowX = prev);
   }, []);
 
-  // prevent body scroll while modal open
+  // Lock body while modal open
   useEffect(() => {
+    const prev = document.body.style.overflow;
     if (showAuthModal) document.body.style.overflow = "hidden";
-    else document.body.style.overflow = "";
-    return () => {
-      document.body.style.overflow = "";
-    };
+    else document.body.style.overflow = prev || "";
+    return () => (document.body.style.overflow = prev || "");
   }, [showAuthModal]);
 
-  // routing via hash (keeps your product page working)
+  // Hash routing
   const [route, setRoute] = useState(window.location.hash || "#home");
   useEffect(() => {
     const onHash = () => setRoute(window.location.hash || "#home");
@@ -46,36 +60,65 @@ export default function App() {
     return () => window.removeEventListener("hashchange", onHash);
   }, []);
 
-  // products / filters (unchanged)
+  // Filters (category + search)
   const [category, setCategory] = useState("All");
   const [query, setQuery] = useState("");
-  const categories = [
-    "All",
-    ...Array.from(
-      new Set(PRODUCTS.map((p) => (p.category || "").trim()).filter(Boolean))
-    ),
-  ];
 
-  const filtered = PRODUCTS.filter((p) => {
-    const matchCategory = category === "All" || p.category === category;
+  // Categories list
+  const categories = useMemo(() => {
+    const unique = new Set(
+      PRODUCTS.map((p) => (p.category || "").trim()).filter(Boolean)
+    );
+    return ["All", ...unique];
+  }, []);
+
+  // ---- Step 3: Price range + Sort wiring ----
+  const prices = useMemo(() => {
+    const nums = PRODUCTS.map((p) => Number(p.price) || 0);
+    const min = nums.length ? Math.min(...nums) : 0;
+    const max = nums.length ? Math.max(...nums) : 0;
+    return { min, max };
+  }, []);
+
+  const [priceMin, setPriceMin] = useState(prices.min);
+  const [priceMax, setPriceMax] = useState(prices.max);
+  const [sort, setSort] = useState("relevance"); // "relevance" | "price-asc" | "price-desc"
+
+  const handlePriceChange = useCallback(
+    ({ min, max }) => {
+      setPriceMin(Number.isFinite(min) ? min : prices.min);
+      setPriceMax(Number.isFinite(max) ? max : prices.max);
+    },
+    [prices.min, prices.max]
+  );
+
+  // Filter + sort products (memoized)
+  const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    const matchQuery =
-      !q ||
-      p.name.toLowerCase().includes(q) ||
-      p.desc.toLowerCase().includes(q);
-    return matchCategory && matchQuery;
-  });
+    const list = PRODUCTS.filter((p) => {
+      const price = Number(p.price) || 0;
+      const inCat = category === "All" || p.category === category;
+      const inPrice = price >= priceMin && price <= priceMax;
+      if (!q) return inCat && inPrice;
+      const name = (p.name || "").toLowerCase();
+      const desc = (p.desc || "").toLowerCase();
+      return inCat && inPrice && (name.includes(q) || desc.includes(q));
+    });
 
-  // helper used to prompt login from any component
-  const promptLogin = () => setShowAuthModal(true);
+    if (sort === "price-asc")
+      list.sort((a, b) => (a.price || 0) - (b.price || 0));
+    if (sort === "price-desc")
+      list.sort((a, b) => (b.price || 0) - (a.price || 0));
+    return list;
+  }, [category, query, priceMin, priceMax, sort]);
 
-  // open product detail
-  const openProduct = (product) => {
+  const promptLogin = useCallback(() => setShowAuthModal(true), []);
+  const openProduct = useCallback((product) => {
     if (!product) return;
     window.location.hash = `#product-${product.id}`;
-  };
+  }, []);
 
-  // render product page when hash says so
+  // Product detail route
   if (route.startsWith("#product-")) {
     const id = Number(route.replace("#product-", ""));
     const product = PRODUCTS.find((p) => p.id === id);
@@ -96,11 +139,12 @@ export default function App() {
     );
   }
 
-  // normal home/products view
+  // Home / Products
   return (
     <div>
       <AuthModal open={showAuthModal} onClose={() => setShowAuthModal(false)} />
       <Header onRequestAuth={promptLogin} />
+
       <main>
         <section id="home">
           <ScrollReveal direction="up">
@@ -108,107 +152,162 @@ export default function App() {
           </ScrollReveal>
         </section>
 
-        <section id="products">
-          <ScrollReveal direction="up">
+        {/* Products Section */}
+        {/* Products Section */}
+        <section id="products" className="products-section-bg">
+          <div className="products-layout">
+            {/* DESKTOP sidebar (hidden on mobile via CSS) */}
             <ProductFilter
               categories={categories}
               selected={category}
               onSelect={setCategory}
-              query={query}
-              onQueryChange={setQuery}
+              minPrice={prices.min}
+              maxPrice={prices.max}
+              priceMin={priceMin}
+              priceMax={priceMax}
+              onPriceChange={handlePriceChange}
+              sort={sort}
+              onSortChange={setSort}
             />
-          </ScrollReveal>
 
-          <ScrollReveal direction="up">
-            <div
-              className="pf-grid"
-              role="list"
-              style={{ maxWidth: 1100, margin: "20px auto" }}
-            >
-              {filtered.map((p) => (
-                <ProductCard
-                  key={p.id}
-                  product={p}
-                  onView={openProduct}
-                  promptLogin={promptLogin}
+            <div className="products-main">
+              {/* Search at top */}
+              <div className="products-search">
+                <input
+                  className="products-search-input"
+                  placeholder="Search products..."
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  aria-label="Search products"
                 />
-              ))}
-            </div>
-          </ScrollReveal>
-        </section>
+                {/* Mobile-only Filters button */}
+                <button
+                  className="filters-toggle"
+                  type="button"
+                  aria-controls="filters-drawer"
+                  aria-expanded={false}
+                  onClick={() => {
+                    document.documentElement.classList.add("no-scroll");
+                    document
+                      .getElementById("filters-drawer")
+                      ?.classList.add("show");
+                    document
+                      .getElementById("filters-overlay")
+                      ?.classList.add("show");
+                  }}
+                >
+                  Filters
+                </button>
+              </div>
 
-        <section id="about">
-          <section id="about">
-            <ScrollReveal direction="up">
-              <div
-                className="about-section"
-                style={{
-                  maxWidth: "900px",
-                  margin: "0 auto",
-                  padding: "60px 20px",
-                  textAlign: "center",
+              {/* Products grid */}
+              <ScrollReveal direction="up">
+                <div
+                  className="pf-grid"
+                  role="list"
+                  style={{ maxWidth: 1100, margin: "20px auto" }}
+                >
+                  {filtered.map((p) => (
+                    <ProductCard
+                      key={p.id}
+                      product={p}
+                      onView={openProduct}
+                      promptLogin={promptLogin}
+                    />
+                  ))}
+                </div>
+              </ScrollReveal>
+            </div>
+          </div>
+
+          {/* Mobile slide-in drawer reusing the same ProductFilter */}
+          <div
+            id="filters-overlay"
+            className="filters-overlay"
+            onClick={() => {
+              document
+                .getElementById("filters-drawer")
+                ?.classList.remove("show");
+              document
+                .getElementById("filters-overlay")
+                ?.classList.remove("show");
+              document.documentElement.classList.remove("no-scroll");
+            }}
+          />
+
+          <aside
+            id="filters-drawer"
+            className="filters-drawer"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Filters"
+            onKeyDown={(e) => {
+              if (e.key === "Escape") {
+                document
+                  .getElementById("filters-drawer")
+                  ?.classList.remove("show");
+                document
+                  .getElementById("filters-overlay")
+                  ?.classList.remove("show");
+                document.documentElement.classList.remove("no-scroll");
+              }
+            }}
+          >
+            <div className="filters-drawer-bar">
+              <span>Filters</span>
+              <button
+                type="button"
+                aria-label="Close filters"
+                onClick={() => {
+                  document
+                    .getElementById("filters-drawer")
+                    ?.classList.remove("show");
+                  document
+                    .getElementById("filters-overlay")
+                    ?.classList.remove("show");
+                  document.documentElement.classList.remove("no-scroll");
                 }}
               >
-                <h2
-                  style={{
-                    fontSize: "2.2rem",
-                    color: "#222",
-                    marginBottom: "16px",
-                  }}
-                >
-                  About UrbanFrill
-                </h2>
+                ✕
+              </button>
+            </div>
 
-                <p
-                  style={{
-                    color: "#555",
-                    lineHeight: "1.8",
-                    fontSize: "1.05rem",
-                  }}
-                >
-                  UrbanFrill was founded with a simple belief — every home
-                  deserves to feel beautiful, cozy, and uniquely yours. We
-                  specialize in
-                  <strong>
-                    {" "}
-                    premium curtains, wallpapers, and customized bedbacks
-                  </strong>
-                  that bring warmth and personality into your space.
-                </p>
+            <div className="filters-drawer-body">
+              <ProductFilter
+                categories={categories}
+                selected={category}
+                onSelect={(c) => {
+                  setCategory(c);
+                }}
+                minPrice={prices.min}
+                maxPrice={prices.max}
+                priceMin={priceMin}
+                priceMax={priceMax}
+                onPriceChange={handlePriceChange}
+                sort={sort}
+                onSortChange={setSort}
+              />
+            </div>
 
-                <p
-                  style={{
-                    color: "#555",
-                    lineHeight: "1.8",
-                    fontSize: "1.05rem",
-                    marginTop: "16px",
-                  }}
-                >
-                  Our team of designers and fabric experts carefully curates
-                  textures, patterns, and finishes that blend modern trends with
-                  timeless elegance. From selection to installation, we ensure
-                  every step is effortless and enjoyable.
-                </p>
-
-                <p
-                  style={{
-                    color: "#555",
-                    lineHeight: "1.8",
-                    fontSize: "1.05rem",
-                    marginTop: "16px",
-                  }}
-                >
-                  Headquartered in Pune, we proudly serve homes across India —
-                  transforming windows, walls, and bedrooms into statements of
-                  style and comfort.
-                </p>
-
-                <h3 style={{ marginTop: "28px", color: "#0d9488" }}>
-                  UrbanFrill — Furnish your lifestyle.
-                </h3>
-              </div>
-            </ScrollReveal>
-          </section>
+            {/* bottom sticky actions for mobile */}
+            <div className="filters-drawer-actions">
+              <button
+                className="fda-apply"
+                type="button"
+                onClick={() => {
+                  document
+                    .getElementById("filters-drawer")
+                    ?.classList.remove("show");
+                  document
+                    .getElementById("filters-overlay")
+                    ?.classList.remove("show");
+                  document.documentElement.classList.remove("no-scroll");
+                }}
+              >
+                Apply & Close
+              </button>
+            </div>
+          </aside>
         </section>
 
         <ScrollReveal direction="up">

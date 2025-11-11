@@ -181,3 +181,799 @@ details > summary::-webkit-details-marker {
 .uf-btn-primary:hover {
   filter: brightness(0.95);
 }
+
+/* ===== Products page layout (left filter / right grid) ===== */
+.products-layout {
+  max-width: 1100px;
+  margin: 26px auto;
+  padding: 0 18px;
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 18px;
+  align-items: start;
+}
+
+.products-main {
+  min-width: 0;
+}
+
+.products-search {
+  position: sticky;
+  top: 82px; /* sits below sticky header */
+  background: #fff;
+  padding: 8px 0 10px;
+  z-index: 1;
+}
+
+.products-search-input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid #e9eef6;
+  outline: none;
+  font-size: 0.98rem;
+}
+.products-search-input:focus {
+  border-color: #0d9488;
+  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.12);
+}
+
+@media (max-width: 880px) {
+  .products-layout {
+    grid-template-columns: 1fr;
+  }
+  .products-search {
+    top: 74px;
+  }
+}
+
+/* ===== Products page layout (left filter / right grid) ===== */
+.products-layout {
+  max-width: 1150px; /* a bit wider */
+  margin: 26px auto;
+  padding: 0 10px; /* tighter side padding */
+  display: grid;
+  grid-template-columns: 210px 1fr; /* slimmer sidebar */
+  gap: 16px; /* tighter gap gives more grid space */
+  align-items: start;
+}
+
+.products-section-bg {
+  background: #fbfcfe; /* subtle section background */
+}
+
+.products-main {
+  min-width: 0;
+}
+
+.products-search {
+  position: sticky;
+  top: 82px; /* below sticky header */
+  background: transparent; /* blends with section bg */
+  padding: 8px 0 10px;
+  z-index: 1;
+}
+
+.products-search-input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid #e9eef6;
+  outline: none;
+  font-size: 0.98rem;
+  background: #fff;
+}
+.products-search-input:focus {
+  border-color: #0d9488;
+  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.12);
+}
+
+/* grid density stays as before from product-card.css (.pf-grid) */
+
+@media (max-width: 880px) {
+  .products-layout {
+    grid-template-columns: 1fr;
+    padding: 0 14px;
+  }
+  .products-search {
+    top: 74px;
+  }
+}
+
+/* === PATCH: products layout tighter left gutter, wider grid === */
+.products-section-bg {
+  background: #fbfcfe;
+}
+
+.products-layout {
+  max-width: 1180px; /* a touch wider */
+  margin: 24px auto;
+  padding: 0 8px; /* minimal side padding */
+  grid-template-columns: 190px 1fr; /* slimmer sidebar */
+  gap: 14px; /* tighter gap to free space for grid */
+}
+
+.products-main {
+  min-width: 0;
+}
+
+/* Make the search bar compact so cards get more room */
+.products-search {
+  padding: 6px 0 8px;
+}
+.products-search-input {
+  height: 44px;
+}
+@media (max-width: 880px) {
+  .products-layout {
+    grid-template-columns: 1fr;
+    padding: 0 10px;
+  }
+  .products-search {
+    top: 74px;
+  }
+}
+/* Kill sticky on very small screens to avoid scroll jank */
+@media (max-width: 480px) {
+  .products-search {
+    position: static;
+  }
+}
+
+/* === PRODUCTS: flush-left sidebar, wider grid, no horizontal overflow === */
+
+/* Prevent any child from creating a horizontal scrollbar */
+.products-section-bg {
+  background: #fbfcfe;
+  overflow-x: clip;
+}
+
+.products-layout {
+  /* wider container for more card room */
+  max-width: 1280px;
+  margin: 24px auto;
+  padding: 0 8px; /* tiny page gutters */
+  display: grid;
+  grid-template-columns: 200px 1fr; /* slim sidebar */
+  gap: 14px;
+  align-items: start;
+}
+
+/* Pull ONLY the sidebar to the viewport edge, keep cards centered */
+.products-layout > .pf-aside {
+  margin-left: calc(50% - 50vw + 8px); /* flush-left feel */
+}
+.products-layout > .products-main {
+  min-width: 0;
+}
+
+/* Compact search so grid gets more space */
+.products-search {
+  position: sticky;
+  top: 82px;
+  padding: 6px 0 8px;
+  background: transparent;
+  z-index: 1;
+}
+.products-search-input {
+  height: 44px;
+}
+
+/* Grid density (auto-fit keeps cards neat at any width) */
+.pf-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 18px;
+  align-items: start;
+  margin: 18px 0;
+}
+
+/* Turn off the left "pull" when the viewport is narrower (prevents overflow) */
+@media (max-width: 1180px) {
+  .products-layout > .pf-aside {
+    margin-left: 0;
+  }
+}
+
+/* Mobile: one-column, no sticky search to avoid jank, safe paddings */
+@media (max-width: 880px) {
+  .products-layout {
+    grid-template-columns: 1fr;
+    padding: 0 10px;
+  }
+  .products-search {
+    position: sticky;
+    top: 74px;
+  }
+}
+@media (max-width: 520px) {
+  .products-search {
+    position: static;
+  } /* kill sticky on tiny screens */
+}
+
+/* === Consistent page background to match hero/header === */
+.products-section-bg {
+  background: #faf9f7; /* same family as hero */
+  overflow-x: clip;
+}
+
+/* Layout: keep sidebar inside the screen on desktop */
+.products-layout {
+  max-width: 1200px;
+  margin: 24px auto;
+  padding: 0 12px; /* subtle gutter */
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+/* Sidebar always visible within page (undo earlier negative offset if any) */
+.products-layout > .pf-aside {
+  margin-left: 0 !important;
+}
+
+/* Search row */
+.products-search {
+  position: sticky;
+  top: 82px;
+  padding: 6px 0 8px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  background: transparent;
+  z-index: 2;
+}
+.products-search-input {
+  flex: 1 1 auto;
+  height: 44px;
+}
+
+/* Mobile-only Filters button */
+.filters-toggle {
+  display: none;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  border-radius: 10px;
+  height: 44px;
+  padding: 0 12px;
+  font-weight: 700;
+}
+@media (max-width: 880px) {
+  .filters-toggle {
+    display: inline-flex;
+    align-items: center;
+  }
+}
+
+/* Products grid: responsive, stable */
+.pf-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 18px;
+  align-items: start;
+  margin: 18px 0;
+}
+
+/* ===== Mobile drawer for filters ===== */
+.no-scroll {
+  overflow: hidden;
+}
+.filters-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.35);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+  z-index: 80;
+}
+.filters-overlay.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.filters-drawer {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 84%;
+  max-width: 380px;
+  background: #fff;
+  border-right: 1px solid #e9eef6;
+  transform: translateX(-100%);
+  transition: transform 0.28s ease;
+  z-index: 90;
+  display: flex;
+  flex-direction: column;
+}
+.filters-drawer.show {
+  transform: translateX(0);
+}
+
+.filters-drawer-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border-bottom: 1px solid #e9eef6;
+  font-weight: 800;
+}
+.filters-drawer-bar button {
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  border-radius: 8px;
+  height: 32px;
+  padding: 0 10px;
+  cursor: pointer;
+}
+.filters-drawer-body {
+  padding: 10px 12px;
+  overflow-y: auto;
+}
+
+/* Desktop: drawer/overlay hidden */
+@media (min-width: 881px) {
+  .filters-overlay,
+  .filters-drawer {
+    display: none;
+  }
+}
+
+/* Smallest screens: avoid sticky to remove jank */
+@media (max-width: 520px) {
+  .products-search {
+    position: static;
+  }
+}
+
+/* === Desktop: align filters with header logo, free space for grid === */
+@media (min-width: 881px) {
+  .products-layout {
+    max-width: 1200px;
+    /* header has ~20px left breathing room; match it */
+    padding: 0 16px 0 20px;
+    grid-template-columns: 200px 1fr; /* slim, fixed rail */
+    gap: 16px;
+  }
+  /* keep the sidebar fully inside the page (no negative pulls) */
+  .products-layout > .pf-aside {
+    margin-left: 0 !important;
+    width: 200px;
+  }
+}
+
+/* === Desktop: align filter rail with logo, give more room to products === */
+@media (min-width: 881px) {
+  .products-layout {
+    max-width: 1200px;
+    padding: 0 16px 0 20px; /* header’s left breathing room ≈ 20px */
+    grid-template-columns: 200px 1fr;
+    gap: 16px;
+  }
+  .products-layout > .pf-aside {
+    margin-left: 0 !important; /* inside the page, not off-screen */
+    width: 200px;
+  }
+}
+
+/* keep page background consistent with hero/header */
+.products-section-bg {
+  background: #faf9f7;
+}
+
+/* Search row */
+.products-search {
+  position: sticky;
+  top: 82px;
+  padding: 6px 0 8px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  background: transparent;
+  z-index: 2;
+}
+.products-search-input {
+  flex: 1 1 auto;
+  height: 44px;
+}
+
+/* Mobile: put Filters button UNDER the search, full width, centered grid */
+@media (max-width: 880px) {
+  .products-layout {
+    grid-template-columns: 1fr;
+    padding: 0 12px;
+  }
+
+  .products-search {
+    display: grid; /* stacks input then button */
+    grid-template-columns: 1fr;
+    gap: 8px;
+    top: 74px;
+  }
+  .filters-toggle {
+    display: inline-flex;
+    height: 44px;
+    width: 100%;
+    justify-content: center;
+    border: 1px solid #e2e8f0;
+    background: #fff;
+    border-radius: 10px;
+    font-weight: 700;
+  }
+
+  /* center the product grid cleanly on mobile */
+  .pf-grid {
+    max-width: 640px;
+    margin: 18px auto !important; /* overrides any inline style */
+  }
+}
+
+/* Products grid responsive & centered on desktop too */
+.pf-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 18px;
+  align-items: start;
+  max-width: 1100px;
+  margin: 18px auto; /* centered */
+}
+
+/* ===== Mobile filters drawer polish ===== */
+.no-scroll {
+  overflow: hidden;
+}
+
+.filters-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.35);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+  z-index: 80;
+}
+.filters-overlay.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.filters-drawer {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 86%;
+  max-width: 380px;
+  background: #fff;
+  border-right: 1px solid #e9eef6;
+  transform: translateX(-100%);
+  transition: transform 0.28s ease;
+  z-index: 90;
+  display: flex;
+  flex-direction: column;
+}
+.filters-drawer.show {
+  transform: translateX(0);
+}
+
+.filters-drawer-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border-bottom: 1px solid #e9eef6;
+  font-weight: 800;
+}
+.filters-drawer-bar button {
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  border-radius: 8px;
+  height: 32px;
+  padding: 0 10px;
+  cursor: pointer;
+}
+.filters-drawer-body {
+  padding: 12px;
+  overflow-y: auto;
+}
+
+/* sticky bottom actions */
+.filters-drawer-actions {
+  position: sticky;
+  bottom: 0;
+  background: #fff;
+  padding: 10px 12px;
+  border-top: 1px solid #e9eef6;
+}
+.fda-apply {
+  width: 100%;
+  height: 44px;
+  border-radius: 10px;
+  border: 0;
+  background: #0d9488;
+  color: #fff;
+  font-weight: 800;
+}
+
+/* Hide drawer UI on desktop */
+@media (min-width: 881px) {
+  .filters-overlay,
+  .filters-drawer {
+    display: none;
+  }
+}
+
+/* Desktop sidebar stays visible and aligned */
+.pf-aside {
+  position: sticky;
+  top: 82px;
+  align-self: start;
+}
+
+/* Mobile: no inline sidebar; it appears only inside the drawer */
+@media (max-width: 880px) {
+  .pf-aside {
+    display: none;
+  }
+  .filters-drawer .pf-aside {
+    display: block;
+    position: static;
+  }
+  .filters-drawer .pf-aside-inner {
+    background: #fff;
+    border: 1px solid #e9eef6;
+    border-radius: 12px;
+    padding: 12px;
+    box-shadow: 0 8px 20px rgba(12, 12, 12, 0.04);
+  }
+  .filters-drawer .pf-title {
+    display: block;
+  }
+  .filters-drawer .pf-list {
+    display: grid;
+    gap: 8px;
+    overflow: visible;
+    padding: 0;
+  }
+  .filters-drawer .pf-item {
+    white-space: normal;
+    border-radius: 10px;
+    padding: 10px 12px;
+  }
+}
+
+/* ============================= */
+/* ✅ URBANFRILL PRODUCT LAYOUT FIXES — DESKTOP + MOBILE */
+/* ============================= */
+
+/* === Desktop: align filter rail with logo === */
+@media (min-width: 881px) {
+  .products-layout {
+    max-width: 1200px;
+    padding: 0 16px;
+    grid-template-columns: 200px 1fr;
+    gap: 16px;
+  }
+
+  /* Sidebar aligned flush with logo’s left edge */
+  .products-layout > .pf-aside {
+    margin-left: calc(50% - 50vw + 20px); /* perfectly aligned under logo */
+    width: 200px;
+  }
+
+  /* On smaller desktops, keep inside normal container */
+  @media (max-width: 1280px) {
+    .products-layout > .pf-aside {
+      margin-left: 0;
+    }
+  }
+}
+
+/* Keep page background consistent with hero/header */
+.products-section-bg {
+  background: #faf9f7;
+}
+
+/* ============================= */
+/* ✅ MOBILE VIEW FIXES */
+/* ============================= */
+
+/* Mobile: Search + Filters button (not sticky, stacked) */
+@media (max-width: 880px) {
+  .products-layout {
+    grid-template-columns: 1fr;
+    padding: 0 12px;
+  }
+
+  /* remove sticky behavior */
+  .products-search {
+    position: static !important;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+    margin-top: 6px;
+  }
+
+  /* full-width filters button under search bar */
+  .filters-toggle {
+    display: inline-flex;
+    width: 100%;
+    height: 44px;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #e2e8f0;
+    background: #fff;
+    border-radius: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .filters-toggle:hover {
+    background: #f7f7f7;
+  }
+
+  /* center product grid */
+  .pf-grid {
+    max-width: 640px;
+    margin: 18px auto !important;
+  }
+}
+
+/* ============================= */
+/* ✅ MOBILE FILTER DRAWER STYLES */
+/* ============================= */
+.no-scroll {
+  overflow: hidden;
+}
+
+.filters-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.35);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+  z-index: 80;
+}
+.filters-overlay.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.filters-drawer {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 86%;
+  max-width: 380px;
+  background: #fff;
+  border-right: 1px solid #e9eef6;
+  transform: translateX(-100%);
+  transition: transform 0.28s ease;
+  z-index: 90;
+  display: flex;
+  flex-direction: column;
+}
+.filters-drawer.show {
+  transform: translateX(0);
+}
+
+.filters-drawer-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border-bottom: 1px solid #e9eef6;
+  font-weight: 800;
+}
+
+.filters-drawer-bar button {
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  border-radius: 8px;
+  height: 32px;
+  padding: 0 10px;
+  cursor: pointer;
+}
+
+.filters-drawer-body {
+  padding: 12px;
+  overflow-y: auto;
+}
+
+.filters-drawer-actions {
+  position: sticky;
+  bottom: 0;
+  background: #fff;
+  padding: 10px 12px;
+  border-top: 1px solid #e9eef6;
+}
+
+.fda-apply {
+  width: 100%;
+  height: 44px;
+  border-radius: 10px;
+  border: 0;
+  background: #0d9488;
+  color: #fff;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+/* Hide drawer UI on desktop */
+@media (min-width: 881px) {
+  .filters-overlay,
+  .filters-drawer {
+    display: none;
+  }
+}
+
+/* ==== DESKTOP: align filter rail exactly under the logo ==== */
+/* This overrides any earlier `margin-left: 0 !important;` rule */
+@media (min-width: 1080px) {
+  .products-layout {
+    max-width: 1200px; /* keep your centered grid width */
+    padding: 0 16px; /* normal page gutter */
+    grid-template-columns: 200px 1fr;
+    gap: 16px;
+  }
+
+  /* Pull ONLY the sidebar to the viewport's left edge (~20px like the logo) */
+  .products-layout > .pf-aside {
+    margin-left: calc(50% - 50vw + 20px) !important;
+    width: 200px;
+  }
+}
+
+/* On smaller desktops where the pull would look cramped, reset it */
+@media (min-width: 881px) and (max-width: 1079.98px) {
+  .products-layout > .pf-aside {
+    margin-left: 0 !important;
+  }
+}
+
+/* ==== DESKTOP SIDEBAR: keep it visible + align under logo (no negative pull) ==== */
+@media (min-width: 1080px) {
+  /* never clip the left edge of the sidebar */
+  .products-section-bg {
+    overflow-x: visible;
+  }
+
+  /* align content with the header logo and give grid max room */
+  .products-layout {
+    max-width: 1200px;
+    padding-left: 20px; /* <- tweak to 18/22px if your logo offset differs */
+    padding-right: 16px;
+    grid-template-columns: 200px 1fr; /* slim rail + wide products */
+    gap: 16px;
+  }
+
+  /* ensure the sidebar stays inside the container */
+  .products-layout > .pf-aside {
+    margin-left: 0 !important; /* cancel any previous calc() pull */
+    width: 200px;
+    position: sticky;
+    top: 82px; /* under the sticky header */
+    align-self: start;
+  }
+}
+
+/* Narrow desktops: same behavior, just tighter padding */
+@media (min-width: 881px) and (max-width: 1079.98px) {
+  .products-section-bg {
+    overflow-x: visible;
+  }
+  .products-layout {
+    padding-left: 16px;
+    padding-right: 16px;
+    grid-template-columns: 200px 1fr;
+  }
+  .products-layout > .pf-aside {
+    margin-left: 0 !important;
+  }
+}

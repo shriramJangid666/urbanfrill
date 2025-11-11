@@ -1,43 +1,53 @@
 /* product-card.css - simple, responsive product cards */
 
+/* PERF: virtualize offscreen cards */
+.pc-card {
+  content-visibility: auto;
+  contain-intrinsic-size: 360px 420px; /* reserve space to prevent jumps */
+}
+
 .pc-card {
   background: #fff;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 8px 20px rgba(12,12,12,0.06);
+  box-shadow: 0 8px 20px rgba(12, 12, 12, 0.06);
   display: flex;
   flex-direction: column;
-  transition: transform 0.16s ease, box-shadow 0.16s ease;
+  transition:
+    transform 0.16s ease,
+    box-shadow 0.16s ease;
   min-height: 360px;
+  will-change: transform; /* smooth hover */
 }
 
 .pc-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 16px 40px rgba(12,12,12,0.09);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(12, 12, 12, 0.08);
 }
 
 .pc-media {
   width: 100%;
   height: 220px;
-  background:#f6f6f6;
-  display:flex;
-  align-items:center;
-  justify-content:center;
+  background: #f6f6f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
+  border: none; /* button reset */
 }
 
 .pc-media img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  display:block;
+  display: block;
 }
 
 /* body */
 .pc-body {
   padding: 14px;
-  display:flex;
-  flex-direction:column;
+  display: flex;
+  flex-direction: column;
   gap: 8px;
   flex: 1 1 auto;
 }
@@ -50,19 +60,19 @@
 }
 
 .pc-desc {
-  margin:0;
+  margin: 0;
   color: #555;
   font-size: 0.92rem;
-  line-height: 1.2;
+  line-height: 1.4;
   min-height: 36px;
 }
 
 /* footer */
 .pc-footer {
   margin-top: auto;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   gap: 10px;
 }
 
@@ -79,11 +89,10 @@
 
 /* buttons */
 .pc-buttons {
-  display:flex;
-  gap:8px;
-  align-items:center;
+  display: flex;
+  gap: 8px;
+  align-items: center;
 }
-
 .pc-btn {
   border: none;
   padding: 8px 10px;
@@ -92,12 +101,10 @@
   font-weight: 700;
   font-size: 0.9rem;
 }
-
 .pc-add {
   background: #0d9488;
   color: #fff;
 }
-
 .pc-buy {
   background: transparent;
   border: 1px solid #ddd;
@@ -115,9 +122,128 @@
 
 /* responsive */
 @media (max-width: 980px) {
-  .pf-grid { grid-template-columns: repeat(2, 1fr); }
+  .pf-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 @media (max-width: 560px) {
-  .pf-grid { grid-template-columns: 1fr; }
-  .pc-media { height: 200px; }
+  .pf-grid {
+    grid-template-columns: 1fr;
+  }
+  .pc-media {
+    height: 200px;
+  }
+}
+
+/* === PATCH: consistent CTA sizes and smooth mobile === */
+.pc-buttons {
+  gap: 10px;
+}
+.pc-btn {
+  line-height: 1; /* remove font baseline drift */
+  height: 36px; /* consistent height */
+  padding: 0 12px; /* equal padding with fixed height */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 92px; /* consistent min width across cards */
+}
+.pc-add {
+  background: #0d9488;
+  color: #fff;
+}
+.pc-buy {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+}
+
+/* Make media cheaper to paint on scroll (mobile jank fix) */
+.pc-media {
+  will-change: transform;
+}
+
+/* Mobile: stack buttons full width to avoid wrap/mismatch */
+@media (max-width: 560px) {
+  .pc-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .pc-btn {
+    min-width: 0;
+    width: 100%;
+    height: 40px;
+  } /* easy tap targets */
+  .pc-media {
+    height: 200px;
+  }
+}
+
+/* === CARDS: consistent buttons and smooth mobile === */
+.pc-buttons {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.pc-btn {
+  height: 36px;
+  line-height: 1;
+  padding: 0 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 96px;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+.pc-add {
+  background: #0d9488;
+  color: #fff;
+}
+.pc-buy {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  color: #111;
+}
+
+/* Mobile: grid buttons to avoid wrapping */
+@media (max-width: 560px) {
+  .pc-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .pc-btn {
+    min-width: 0;
+    width: 100%;
+    height: 40px;
+  }
+}
+
+/* enforce consistent CTA size (already added earlier, safe to keep) */
+.pc-buttons {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.pc-btn {
+  height: 36px;
+  padding: 0 12px;
+  min-width: 96px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+@media (max-width: 560px) {
+  .pc-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .pc-btn {
+    min-width: 0;
+    width: 100%;
+    height: 40px;
+  }
 }

@@ -1,34 +1,113 @@
-// src/components/ProductFilter.jsx
-import React from "react";
+import React, { useMemo } from "react";
 import "./product-filter.css";
 
-export default function ProductFilter({ categories = [], selected, onSelect, query, onQueryChange }) {
-  return (
-    <div style={{ maxWidth: 1100, margin: "26px auto", padding: "0 18px" }}>
-      <div style={{ display: "flex", justifyContent: "center", marginBottom: 14 }}>
-        <input
-          placeholder="🔍 Search products..."
-          value={query}
-          onChange={(e) => onQueryChange(e.target.value)}
-          style={{ width: "60%", padding: 12, borderRadius: 8, border: "1px solid #eee" }}
-        />
-      </div>
+/**
+ * Backward compatible:
+ * - categories, selected, onSelect (existing)
+ * Optional new props:
+ * - minPrice, maxPrice, priceMin, priceMax, onPriceChange
+ * - sort, onSortChange  ("relevance" | "price-asc" | "price-desc")
+ */
+export default function ProductFilter({
+  categories = [],
+  selected,
+  onSelect,
+  minPrice = 0,
+  maxPrice = 0,
+  priceMin,
+  priceMax,
+  onPriceChange,
+  sort = "relevance",
+  onSortChange,
+}) {
+  const items = useMemo(() => categories || [], [categories]);
 
-      <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
-        {categories.map((c) => {
-          const active = c === selected;
-          return (
-            <button
-              key={c}
-              onClick={() => onSelect(c)}
-              className={`pf-chip ${active ? "active" : ""}`}
-              aria-pressed={active}
+  const handlePriceMin = (e) =>
+    onPriceChange &&
+    onPriceChange({ min: Number(e.target.value), max: priceMax });
+  const handlePriceMax = (e) =>
+    onPriceChange &&
+    onPriceChange({ min: priceMin, max: Number(e.target.value) });
+
+  return (
+    <aside className="pf-aside" aria-label="Product filters">
+      <div className="pf-aside-inner">
+        <h4 className="pf-title">Filter by category</h4>
+        <nav
+          className="pf-list"
+          role="listbox"
+          aria-activedescendant={selected}
+        >
+          {items.map((c) => {
+            const active = c === selected;
+            return (
+              <button
+                key={c}
+                id={c}
+                onClick={() => onSelect && onSelect(c)}
+                className={`pf-item ${active ? "active" : ""}`}
+                aria-pressed={active}
+              >
+                {c}
+              </button>
+            );
+          })}
+        </nav>
+
+        {/* --- Price filter (optional) --- */}
+        {onPriceChange ? (
+          <div className="pf-block">
+            <h4 className="pf-title" style={{ marginTop: 12 }}>
+              Price
+            </h4>
+            <div className="pf-price">
+              <label>
+                Min
+                <input
+                  type="number"
+                  inputMode="numeric"
+                  min={minPrice}
+                  max={maxPrice}
+                  value={priceMin}
+                  onChange={handlePriceMin}
+                />
+              </label>
+              <label>
+                Max
+                <input
+                  type="number"
+                  inputMode="numeric"
+                  min={minPrice}
+                  max={maxPrice}
+                  value={priceMax}
+                  onChange={handlePriceMax}
+                />
+              </label>
+            </div>
+            <div className="pf-hint">
+              ₹{minPrice.toLocaleString()} – ₹{maxPrice.toLocaleString()}
+            </div>
+          </div>
+        ) : null}
+
+        {/* --- Sort (optional) --- */}
+        {onSortChange ? (
+          <div className="pf-block">
+            <h4 className="pf-title" style={{ marginTop: 12 }}>
+              Sort
+            </h4>
+            <select
+              className="pf-select"
+              value={sort}
+              onChange={(e) => onSortChange(e.target.value)}
             >
-              {c}
-            </button>
-          );
-        })}
+              <option value="relevance">Relevance</option>
+              <option value="price-asc">Price: Low to High</option>
+              <option value="price-desc">Price: High to Low</option>
+            </select>
+          </div>
+        ) : null}
       </div>
-    </div>
+    </aside>
   );
 }

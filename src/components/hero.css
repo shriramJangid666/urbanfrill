@@ -20,7 +20,7 @@
   align-items: center;
 }
 
-/* UNIFORM MEDIA AREA (cinematic & consistent) */
+/* UNIFORM MEDIA AREA */
 .hero-media {
   aspect-ratio: 16 / 10;
   max-height: clamp(360px, 52vh, 520px);
@@ -30,20 +30,27 @@
   border-radius: 18px;
   box-shadow: 0 10px 26px rgba(0, 0, 0, 0.08);
   background: #f2f2f2;
+  will-change: transform; /* small GPU hint for smoothness */
 }
 
-/* ===== SLIDER: silky right→left motion ===== */
+/* SLIDER */
 .slider {
   position: absolute;
   inset: 0;
+  transform: translateX(0%);
+}
+.slider.two {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  transform: translateX(0%);
+}
+.slider.single {
+  display: block;
 }
 .slide {
   width: 100%;
   height: 100%;
   display: flex;
+  align-items: stretch;
 }
 .slide.prev {
   grid-column: 1;
@@ -51,7 +58,6 @@
 .slide.current {
   grid-column: 2;
 }
-
 .slider.animating {
   animation: slideLeft 0.6s cubic-bezier(0.22, 0.61, 0.36, 1) both;
 }
@@ -84,8 +90,8 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center;
   display: block;
-  object-position: center center;
   filter: saturate(1.02) contrast(1.03) brightness(0.98);
   transform: translateZ(0);
 }
@@ -138,7 +144,7 @@
   z-index: 2;
 }
 
-/* TEXT AREA */
+/* TEXT AREA (chips removed) */
 .hero-text {
   display: flex;
   flex-direction: column;
@@ -156,40 +162,6 @@
   font-size: clamp(0.98rem, 0.35vw + 0.8rem, 1.05rem);
   line-height: 1.7;
   max-width: 42ch;
-}
-
-/* CATEGORY CHIPS (simple & smooth) */
-.hero-tabs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 6px;
-}
-.tab {
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  background: #f1efe9;
-  color: #444;
-  padding: 9px 13px;
-  border-radius: 999px;
-  font-size: 0.92rem;
-  font-weight: 600;
-  cursor: pointer;
-  outline: none;
-  transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.2s ease,
-    color 0.2s ease;
-}
-.tab:hover {
-  transform: translateY(-1px);
-}
-.tab.active {
-  background: #fff;
-  color: #222;
-  border-color: transparent;
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
-}
-.tab .tab-label {
-  position: relative;
-  z-index: 1;
 }
 
 /* BUTTONS */
@@ -241,11 +213,6 @@
     order: 2;
   }
 }
-@media (max-width: 640px) {
-  .hero-tabs {
-    display: none;
-  } /* keep mobile minimal */
-}
 @media (max-width: 560px) {
   .hero {
     padding: 36px 16px 44px;
@@ -262,74 +229,7 @@
   }
 }
 
-/* Ensure <figure> has no default margins */
+/* reset figure margins */
 figure {
   margin: 0;
-}
-
-/* Make slides and their direct child fill completely */
-.slide {
-  align-items: stretch;
-}
-.slide > * {
-  width: 100%;
-  height: 100%;
-}
-
-/* Extra safety so any nested wrappers also stretch */
-.hero-single,
-.hero-collage,
-.card {
-  width: 100%;
-  height: 100%;
-}
-
-/* When there is NO previous slide, make slider single-column so it fills 100% */
-.slider.single {
-  display: block; /* no grid; current slide fills the box */
-}
-.slider.single .slide.current {
-  width: 100%;
-  height: 100%;
-}
-
-/* When animating WITH a previous slide, use two columns for the slide-over effect */
-.slider.two {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-}
-.slider.two .slide.prev {
-  grid-column: 1;
-}
-.slider.two .slide.current {
-  grid-column: 2;
-}
-
-/* (Existing) animation only applies when we have two slides */
-.slider.animating {
-  animation: slideLeft 0.6s cubic-bezier(0.22, 0.61, 0.36, 1) both;
-}
-
-/* Ensure all slide children stretch fully */
-figure {
-  margin: 0;
-}
-.slide {
-  align-items: stretch;
-}
-.slide > * {
-  width: 100%;
-  height: 100%;
-}
-.hero-single,
-.hero-collage,
-.card {
-  width: 100%;
-  height: 100%;
-}
-.card img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
 }
