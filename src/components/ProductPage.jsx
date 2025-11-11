@@ -9,10 +9,22 @@ export default function ProductPage({ product }) {
   const { user } = useAuth();
   const { addToCart } = useCart();
 
-  // 🔹 scroll to top before paint whenever product (or hash) changes
+  // 🔹 scroll to top before paint whenever product changes
   useLayoutEffect(() => {
     forceTop();
-  }, [product?.id, window.location.hash]);
+  }, [product?.id]);
+
+  // Normalize images: prefer array, else fall back to single image
+  const images = useMemo(() => {
+    if (!product) return [];
+    const fromArray = Array.isArray(product.images)
+      ? product.images.filter(Boolean)
+      : [];
+    if (fromArray.length) return fromArray;
+    return product.image ? [product.image] : [];
+  }, [product]);
+
+  const [idx, setIdx] = useState(0);
 
   if (!product) {
     return (
@@ -29,16 +41,6 @@ export default function ProductPage({ product }) {
     );
   }
 
-  // Normalize images: prefer array, else fall back to single image
-  const images = useMemo(() => {
-    const fromArray = Array.isArray(product.images)
-      ? product.images.filter(Boolean)
-      : [];
-    if (fromArray.length) return fromArray;
-    return product.image ? [product.image] : [];
-  }, [product]);
-
-  const [idx, setIdx] = useState(0);
   const current = images[idx] || "images/placeholder.png";
 
   const handleAdd = () => {

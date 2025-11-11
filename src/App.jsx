@@ -1,5 +1,5 @@
 // src/App.jsx
-import React, { useEffect, useMemo, useCallback, useState } from "react";
+import { useEffect, useMemo, useCallback, useState } from "react";
 import Header from "./components/Header";
 import Hero from "./components/Hero";
 import ProductCard from "./components/ProductCard";
@@ -13,20 +13,7 @@ import { useAuth } from "./context/useAuth";
 import "./index.css";
 import PRODUCTS from "./data/products";
 
-/* stable style objects */
-const PF_GRID_STYLE = { maxWidth: 1100, margin: "20px auto" };
-const ABOUT_WRAPPER_STYLE = {
-  maxWidth: "900px",
-  margin: "0 auto",
-  padding: "60px 20px",
-  textAlign: "center",
-};
-const ABOUT_H2_STYLE = {
-  fontSize: "2.2rem",
-  color: "#222",
-  marginBottom: "16px",
-};
-const ABOUT_P_STYLE = { color: "#555", lineHeight: "1.8", fontSize: "1.05rem" };
+
 
 export default function App() {
   const { user } = useAuth();
@@ -205,14 +192,15 @@ export default function App() {
                 <div
                   className="pf-grid"
                   role="list"
-                  style={{ maxWidth: 1100, margin: "20px auto" }}
+                  style={{ maxWidth: "1100px", margin: "20px auto" }}
                 >
-                  {filtered.map((p) => (
+                  {filtered.map((p, i) => (
                     <ProductCard
                       key={p.id}
                       product={p}
                       onView={openProduct}
                       promptLogin={promptLogin}
+                      index={i}
                     />
                   ))}
                 </div>

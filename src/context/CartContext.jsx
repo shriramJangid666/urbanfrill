@@ -1,13 +1,14 @@
 // src/context/CartContext.jsx
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState, useMemo } from "react";
 import { useAuth } from "../context/useAuth";
 import { productPath } from "../utils/asset"; // ✅ store clean path
 
 const CartContext = createContext();
-export const useCart = () => useContext(CartContext);
-
 const GUEST_KEY = "uf_cart_guest_v1";
 const STORAGE_PREFIX = "uf_cart_"; // uf_cart_<uid>_v1
+
+// eslint-disable-next-line react-refresh/only-export-components
+export const useCart = () => useContext(CartContext);
 
 export function CartProvider({ children }) {
   const { user } = useAuth();
@@ -48,7 +49,9 @@ export function CartProvider({ children }) {
   useEffect(() => {
     try {
       localStorage.setItem(storageKey, JSON.stringify(cart));
-    } catch {}
+    } catch {
+      // ignore storage errors silently
+    }
   }, [cart, storageKey]);
 
   const addToCart = (item) => {
@@ -80,17 +83,25 @@ export function CartProvider({ children }) {
     setCart((prev) => prev.filter((p) => p.id !== id));
   const clearCart = () => setCart([]);
 
-  const itemCount = cart.reduce((s, i) => s + i.qty, 0);
-  const subTotal = cart.reduce((s, i) => s + (Number(i.price) || 0) * i.qty, 0);
+  const { itemCount, subTotal } = useMemo(
+    () => ({
+      itemCount: cart.reduce((s, i) => s + i.qty, 0),
+      subTotal: cart.reduce((s, i) => s + (Number(i.price) || 0) * i.qty, 0),
+    }),
+    [cart]
+  );
 
-  const value = {
-    cart,
-    addToCart,
-    updateQty,
-    removeFromCart,
-    clearCart,
-    itemCount,
-    subTotal,
-  };
+  const value = useMemo(
+    () => ({
+      cart,
+      addToCart,
+      updateQty,
+      removeFromCart,
+      clearCart,
+      itemCount,
+      subTotal,
+    }),
+    [cart, itemCount, subTotal]
+  );
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }

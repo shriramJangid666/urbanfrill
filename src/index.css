@@ -977,3 +977,135 @@ details > summary::-webkit-details-marker {
     margin-left: 0 !important;
   }
 }
+
+/* === DESKTOP products layout: flush sidebar + full-width grid === */
+@media (min-width: 881px){
+  .products-section-bg{ background:#faf9f7; overflow-x: visible; }
+
+  .products-layout{
+    max-width: 1200px;
+    padding-left: 20px;    /* ≤ 20px to align under logo */
+    padding-right: 20px;
+    display: grid;
+    grid-template-columns: 220px minmax(0,1fr);  /* sidebar + fluid grid */
+    gap: 16px;
+    align-items: start;
+  }
+
+  .products-layout > .pf-aside{
+    margin-left: 0 !important;    /* never pull it off-screen */
+    width: 220px;
+    position: sticky;
+    top: 82px;
+    align-self: start;
+  }
+
+  .products-main{ min-width: 0; padding-right: 0; }
+
+  /* The grid should use all the remaining width — no max-width clamping */
+  .pf-grid{
+    max-width: none !important;
+    margin: 18px 0 !important;    /* no auto-centering */
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 18px;
+    align-items: start;
+  }
+}
+/* ==== FINAL DESKTOP OVERRIDES: sidebar flush, grid fills, no gaps ==== */
+@media (min-width: 1080px) {
+  /* Section never clips and uses a small page gutter */
+  .products-section-bg {
+    background: #faf9f7;
+    overflow: visible !important;
+    padding: 0 !important;
+  }
+
+  /* Container: left gutter = 20px, fixed sidebar + fluid grid */
+  .products-layout {
+    max-width: 1200px !important;
+    margin: 24px auto !important;
+    padding-left: 20px !important;   /* <= requested 20px */
+    padding-right: 20px !important;
+    display: grid !important;
+    grid-template-columns: 220px minmax(0, 1fr) !important;
+    gap: 16px !important;
+    align-items: start !important;
+  }
+
+  /* Sidebar: NO pulls/transforms/margins; keep sticky under header */
+  .products-layout > .pf-aside {
+    margin: 0 !important;
+    padding: 0 !important;
+    transform: none !important;
+    width: 220px !important;
+    position: sticky !important;
+    top: 82px !important;
+    align-self: start !important;
+  }
+
+  /* Main column must not introduce side gaps */
+  .products-main { min-width: 0 !important; padding: 0 !important; }
+
+  /* Grid: fill all remaining space, no centering clamp, no extra margin */
+  .pf-grid {
+    max-width: none !important;
+    margin: 18px 0 !important;
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)) !important;
+    gap: 18px !important;
+    align-items: start !important;
+  }
+}
+
+/* Narrow-desktop safety (prevents cramped look below 1080px) */
+@media (min-width: 881px) and (max-width: 1079.98px) {
+  .products-layout {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+    grid-template-columns: 220px minmax(0, 1fr) !important;
+  }
+  .products-layout > .pf-aside { margin: 0 !important; transform: none !important; }
+}
+
+/* ===== FINAL DESKTOP FIX: full-width layout, sidebar @ 20px, no grid gap ===== */
+@media (min-width: 1080px) {
+  /* full-width section; no centering/clipping */
+  .products-section-bg {
+    background: #faf9f7;
+    width: 100% !important;
+  }
+
+  /* full-width container with 20px gutters */
+  .products-layout {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 24px 0 !important;
+    padding-left: 20px !important;   /* align under logo */
+    padding-right: 20px !important;
+    display: grid !important;
+    grid-template-columns: 220px 1fr !important;  /* fixed rail + fluid grid */
+    gap: 16px !important;
+    align-items: start !important;
+  }
+
+  /* sidebar locked inside, no negative pulls */
+  .products-layout > .pf-aside {
+    margin: 0 !important;
+    width: 220px !important;
+    position: sticky !important;
+    top: 82px !important;
+    align-self: start !important;
+  }
+
+  /* grid uses all remaining width (no max-width, no centering) */
+  .products-main { min-width: 0 !important; padding: 0 !important; }
+  .pf-grid {
+    max-width: none !important;
+    margin: 18px 0 !important;               /* remove auto-centering */
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)) !important;
+    gap: 18px !important;
+    align-items: start !important;
+  }
+}

@@ -2,8 +2,8 @@ import React, { useEffect, useMemo, useState, useRef } from "react";
 import "./hero.css";
 import { asset } from "../utils/asset";
 
-const PHONE = "917821085631";
-const ROTATE_MS = 5000; // per-slide duration
+const PHONE = "918005827701";
+const ROTATE_MS = 3000; // per-slide duration
 
 const CATS = [
   { id: "featured", label: "Featured", anchor: "#products" },
