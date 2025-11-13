@@ -23,3 +23,19 @@
 .reveal.visible.reveal-right {
   transform: translateX(0);
 }
+
+/* Mobile safety: disable reveal animations on small screens to avoid
+   cases where IntersectionObserver or layout shifts keep content hidden.
+   On mobile we prefer immediate visibility for better UX and reduced
+   jank. */
+@media (max-width: 560px) {
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  .reveal.visible {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}

@@ -45,7 +45,25 @@ export default function ScrollReveal({ children, direction = "up", delay = 0 }) 
       // ignore any errors accessing layout (e.g., server-side)
     }
 
-    return () => observer.disconnect();
+    // Safety fallback: if for any reason the observer doesn't trigger
+    // (layout thrash, heavy images, browser quirk), reveal after
+    // a short timeout so users don't see a blank area.
+    const fallbackMs = Math.max(300, delay + 300);
+    const fallback = setTimeout(() => {
+      if (!el.classList.contains("visible")) {
+        el.classList.add("visible");
+        try {
+          observer.unobserve(el);
+        } catch (e) {
+          // ignore
+        }
+      }
+    }, fallbackMs);
+
+    return () => {
+      clearTimeout(fallback);
+      observer.disconnect();
+    };
   }, [delay]);
 
   const dirClass =
