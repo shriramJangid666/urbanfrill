@@ -1,5 +1,6 @@
 // src/components/Header.jsx
 import React, { useState, useMemo, useCallback } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/useAuth";
 import { useCart } from "../context/CartContext";
 import CartDrawer from "./CartDrawer";
@@ -9,16 +10,16 @@ import { CiUser } from "react-icons/ci";
 import "./header.css";
 
 const PRIMARY = [
-  { label: "Home", hash: "#home" },
-  { label: "Products", hash: "#products" },
-  { label: "About us", hash: "#about" },
-  { label: "Contact us", hash: "#contact" },
+  { label: "Home", to: "/" },
+  { label: "Products", to: "/category/All" },
+  { label: "About us", to: "/" },
+  { label: "Contact us", to: "/" },
 ];
 
 const NAV = [
   {
     label: "Curtains",
-    hash: "#products?cat=Curtains",
+    to: "/category/Curtains",
     items: [
       "Plain curtains",
       "Textured curtains",
@@ -30,7 +31,7 @@ const NAV = [
   },
   {
     label: "Wallpapers",
-    hash: "#products?cat=Wallpapers",
+    to: "/category/Wallpapers",
     items: [
       "Floral",
       "Geometric",
@@ -42,7 +43,7 @@ const NAV = [
   },
   {
     label: "Bedback & Sofa",
-    hash: "#products?cat=Bedback",
+    to: "/category/Bedback",
     items: [
       "Upholstered bedback",
       "Tufted headboard",
@@ -52,12 +53,12 @@ const NAV = [
   },
   {
     label: "Mattress",
-    hash: "#products?cat=Mattress",
+    to: "/category/Mattress",
     items: ["Memory foam", "Orthopedic", "Latex", "Hybrid", "Accessories"],
   },
   {
     label: "Blinds",
-    hash: "#products?cat=Blinds",
+    to: "/category/Blinds",
     items: [
       "Roller blinds",
       "Zebra / day-night",
@@ -68,7 +69,7 @@ const NAV = [
   },
   {
     label: "Wood & PVC Flooring",
-    hash: "#products?cat=Flooring",
+    to: "/category/Flooring",
     items: ["Laminate wood", "Engineered wood", "PVC/Vinyl planks", "Skirting"],
   },
 ];
@@ -76,9 +77,10 @@ const NAV = [
 function Header({ onRequestAuth = () => {} }) {
   const { user, logout } = useAuth();
   const { itemCount } = useCart();
+  const navigate = useNavigate();
 
   const [showCart, setShowCart] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false); // mobile drawer
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const name = useMemo(
     () => user?.displayName || (user?.email ? user.email.split("@")[0] : ""),
@@ -89,21 +91,12 @@ function Header({ onRequestAuth = () => {} }) {
     [user, name]
   );
 
-  const go = useCallback((hash) => {
-    window.location.hash = hash;
-    setMenuOpen(false);
-    const id = hash.replace("#", "");
-    const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-    else window.scrollTo({ top: 0, behavior: "smooth" });
-  }, []);
-
-  const withNav = useCallback(
-    (hash) => (e) => {
-      e.preventDefault();
-      go(hash);
+  const handleNavigate = useCallback(
+    (to) => {
+      navigate(to);
+      setMenuOpen(false);
     },
-    [go]
+    [navigate]
   );
 
   const handleCartClick = useCallback(() => {
@@ -127,11 +120,10 @@ function Header({ onRequestAuth = () => {} }) {
       <header className="uf3-header" role="banner">
         {/* ROW 1: brand | primary | actions */}
         <div className="uf3-top">
-          {/* Left: logo + text (desktop left, mobile centered via CSS) */}
-          <a
+          {/* Left: logo + text */}
+          <Link
             className="uf3-brand"
-            href="#home"
-            onClick={withNav("#home")}
+            to="/"
             aria-label="UrbanFrill Home"
           >
             <img
@@ -144,18 +136,18 @@ function Header({ onRequestAuth = () => {} }) {
               <span className="uf3-title">UrbanFrill</span>
               <span className="uf3-tag">Furnish Your Lifestyle</span>
             </span>
-          </a>
+          </Link>
 
-          {/* Center: primary links (hidden on mobile) */}
+          {/* Center: primary links */}
           <nav className="uf3-primary" aria-label="Primary">
             {PRIMARY.map((p) => (
-              <a key={p.label} href={p.hash} onClick={withNav(p.hash)}>
+              <Link key={p.label} to={p.to}>
                 {p.label}
-              </a>
+              </Link>
             ))}
           </nav>
 
-          {/* Right: actions (on mobile we show ONLY the burger; user/cart hidden via CSS) */}
+          {/* Right: actions */}
           <div className="uf3-actions">
             <button
               className="uf3-user uf3-hide-on-mobile"
@@ -207,12 +199,12 @@ function Header({ onRequestAuth = () => {} }) {
           </div>
         </div>
 
-        {/* ROW 2: categories (hidden on mobile) */}
+        {/* ROW 2: categories */}
         <div className="uf3-catsrow">
           <nav className="uf3-cats" aria-label="Categories">
             {NAV.map((m) => (
               <div key={m.label} className="uf3-cat">
-                <button className="uf3-catbtn" onClick={() => go(m.hash)}>
+                <button className="uf3-catbtn" onClick={() => handleNavigate(m.to)}>
                   {m.label}
                   <svg
                     className="uf3-caret"
@@ -237,23 +229,22 @@ function Header({ onRequestAuth = () => {} }) {
                         className="uf3-sub"
                         role="menuitem"
                         onClick={() => {
-                          go(m.hash);
+                          handleNavigate(m.to);
                           document
                             .querySelectorAll(".uf3-cat")
-                            .forEach((el) => el.blur()); // closes any open dropdown
+                            .forEach((el) => el.blur());
                         }}
                       >
                         {sub}
                       </button>
                     ))}
                   </div>
-                  <a
+                  <Link
                     className="uf3-viewall"
-                    href={m.hash}
-                    onClick={withNav(m.hash)}
+                    to={m.to}
                   >
                     View all {m.label} →
-                  </a>
+                  </Link>
                 </div>
               </div>
             ))}
@@ -269,15 +260,14 @@ function Header({ onRequestAuth = () => {} }) {
         >
           {/* sticky header inside drawer with close */}
           <div className="uf3-mobbar">
-            <a
+            <Link
               className="uf3-mobbrand"
-              href="#home"
-              onClick={withNav("#home")}
+              to="/"
               aria-label="UrbanFrill Home"
             >
               <img className="uf3-logo" src={asset("images/logo.png")} alt="" />
               <span className="uf3-title">UrbanFrill</span>
-            </a>
+            </Link>
             <button
               className="uf3-close"
               aria-label="Close menu"
@@ -328,13 +318,17 @@ function Header({ onRequestAuth = () => {} }) {
           {/* Primary links */}
           <div className="uf3-mobile-primary">
             {PRIMARY.map((p) => (
-              <a key={p.label} href={p.hash} onClick={withNav(p.hash)}>
+              <Link
+                key={p.label}
+                to={p.to}
+                onClick={() => setMenuOpen(false)}
+              >
                 {p.label}
-              </a>
+              </Link>
             ))}
           </div>
 
-          {/* Category accordions (+ changes to × when open) */}
+          {/* Category accordions */}
           <div className="uf3-mobile-cats">
             {NAV.map((m) => (
               <details className="uf3-acc" key={m.label}>
@@ -345,18 +339,21 @@ function Header({ onRequestAuth = () => {} }) {
                   </span>
                 </summary>
                 <div className="uf3-accpanel" role="region">
-                  <a
+                  <Link
                     className="uf3-accviewall"
-                    href={m.hash}
-                    onClick={withNav(m.hash)}
+                    to={m.to}
+                    onClick={() => setMenuOpen(false)}
                   >
                     View all {m.label} →
-                  </a>
+                  </Link>
                   {m.items.map((sub) => (
                     <button
                       key={sub}
                       className="uf3-accitem"
-                      onClick={() => go(m.hash)}
+                      onClick={() => {
+                        handleNavigate(m.to);
+                        setMenuOpen(false);
+                      }}
                     >
                       {sub}
                     </button>

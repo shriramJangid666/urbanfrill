@@ -1,13 +1,23 @@
 import React, { useMemo, useState, useLayoutEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/useAuth";
 import { useCart } from "../context/CartContext";
 import { productImg, asset } from "../utils/asset";
 import { forceTop } from "../utils/scrollToTop";
+import PRODUCTS from "../data/products";
 import "./product-page.css";
 
-export default function ProductPage({ product }) {
+export default function ProductPage({ promptLogin = () => {} }) {
+  const { productId } = useParams();
+  const navigate = useNavigate();
   const { user } = useAuth();
   const { addToCart } = useCart();
+  const [added, setAdded] = useState(false);
+
+  const product = useMemo(() => {
+    if (!productId) return null;
+    return PRODUCTS.find((p) => p.id === Number(productId));
+  }, [productId]);
 
   // 🔹 scroll to top before paint whenever product changes
   useLayoutEffect(() => {
@@ -32,10 +42,10 @@ export default function ProductPage({ product }) {
         <h3>Product not found</h3>
         <p>It may have been removed or renamed.</p>
         <button
-          onClick={() => (window.location.hash = "#products")}
+          onClick={() => navigate("/")}
           className="pp-back"
         >
-          ← Back to Products
+          ← Back to Home
         </button>
       </div>
     );
@@ -45,7 +55,7 @@ export default function ProductPage({ product }) {
 
   const handleAdd = () => {
     if (!user) {
-      alert("Please log in to add to cart.");
+      promptLogin();
       return;
     }
     addToCart({
@@ -55,7 +65,8 @@ export default function ProductPage({ product }) {
       image: images[0] || "images/placeholder.png",
       qty: 1,
     });
-    alert("Item added to cart!");
+    setAdded(true);
+    setTimeout(() => setAdded(false), 1600);
   };
 
   return (
@@ -115,8 +126,8 @@ export default function ProductPage({ product }) {
           <p className="pp-desc">{product.desc}</p>
 
           <div style={{ marginTop: 18, display: "flex", gap: 12 }}>
-            <button className="pp-btn" onClick={handleAdd}>
-              Add to cart
+            <button className="pp-btn" onClick={handleAdd} disabled={added}>
+              {added ? "✓ Added" : "Add to cart"}
             </button>
             <button
               className="pp-btn-outline"

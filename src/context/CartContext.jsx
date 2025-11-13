@@ -2,6 +2,8 @@
 import React, { createContext, useContext, useEffect, useState, useMemo } from "react";
 import { useAuth } from "../context/useAuth";
 import { productPath } from "../utils/asset"; // ✅ store clean path
+import { db } from "../firebase";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 
 const CartContext = createContext();
 const GUEST_KEY = "uf_cart_guest_v1";
@@ -37,12 +39,32 @@ export function CartProvider({ children }) {
   });
 
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(storageKey);
-      setCart(raw ? normalizeCart(JSON.parse(raw)) : []);
-    } catch {
-      setCart([]);
-    }
+    let mounted = true;
+    const load = async () => {
+      try {
+        // prefer Firestore cart for logged-in users
+        if (uid !== "guest" && db) {
+          const ref = doc(db, "carts", uid);
+          const snap = await getDoc(ref);
+          if (snap && snap.exists()) {
+            const data = snap.data();
+            if (mounted && data && Array.isArray(data.items)) {
+              setCart(normalizeCart(data.items));
+              return;
+            }
+          }
+        }
+
+        const raw = localStorage.getItem(storageKey) || localStorage.getItem(GUEST_KEY);
+        if (mounted) setCart(raw ? normalizeCart(JSON.parse(raw)) : []);
+      } catch {
+        if (mounted) setCart([]);
+      }
+    };
+    load();
+    return () => {
+      mounted = false;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [uid]);
 
@@ -53,6 +75,22 @@ export function CartProvider({ children }) {
       // ignore storage errors silently
     }
   }, [cart, storageKey]);
+
+  // sync to Firestore for logged-in users
+  useEffect(() => {
+    if (!db) return;
+    if (uid === "guest") return; // don't write guest carts
+
+    const ref = doc(db, "carts", uid);
+    const write = async () => {
+      try {
+        await setDoc(ref, { items: cart }, { merge: true });
+      } catch (err) {
+        // non-fatal, keep local copy
+      }
+    };
+    write();
+  }, [cart, uid]);
 
   const addToCart = (item) => {
     setCart((prev) => {

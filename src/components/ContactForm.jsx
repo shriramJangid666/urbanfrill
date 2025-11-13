@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import "./contactForm.css";
+import { db } from "../firebase";
+import { collection, addDoc } from "firebase/firestore";
 
 export default function ContactForm() {
   const [formData, setFormData] = useState({ name: "", phone: "", message: "" });
@@ -26,8 +28,19 @@ export default function ContactForm() {
       date: new Date().toISOString(),
     };
 
-    // <- log the submitted data to console (what you asked)
-    console.log("ContactForm submission:", newEntry);
+    // Try to write to Firestore (non-blocking). If Firestore is not available or fails,
+    // fall back to console output so the app doesn't break.
+    (async () => {
+      try {
+        if (db) {
+          await addDoc(collection(db, "contacts"), newEntry);
+        } else {
+          console.log("ContactForm (no db):", newEntry);
+        }
+      } catch (err) {
+        console.warn("Failed to save contact to Firestore:", err);
+      }
+    })();
 
     // clear form & show user-friendly inline confirmation
     setFormData({ name: "", phone: "", message: "" });

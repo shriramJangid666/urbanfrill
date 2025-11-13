@@ -1,21 +1,189 @@
-<<<<<<< HEAD
-# React + Vite
+# UrbanFrill - Interior Design E-Commerce Store
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern, responsive e-commerce platform for interior design products built with React, Vite, and React Router.
 
-Currently, two official plugins are available:
+## 🌟 Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Product Catalog** - Browse furniture and interior design products
+- **Category Navigation** - Curtains, Wallpapers, Bedback & Sofa, Mattress, Blinds, Flooring
+- **Advanced Filtering** - Filter by price, category, and search functionality
+- **Product Details** - Detailed product information with images
+- **Shopping Cart** - Add items to cart (requires login)
+- **User Authentication** - Firebase-powered auth system
+- **Responsive Design** - Mobile-first design approach
+- **Clean URL Routing** - React Router v6 with proper navigation
+- **Image Optimization** - Lazy loading and responsive images
 
-## React Compiler
+## 🚀 Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Frontend**: React 19
+- **Build Tool**: Vite 7
+- **Routing**: React Router v6
+- **Styling**: Tailwind CSS 4 + Custom CSS
+- **Authentication**: Firebase 12
+- **Database**: Firebase Realtime Database
+- **Deployment**: GitHub Pages
 
-## Expanding the ESLint configuration
+## 📦 Installation
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
-=======
-# urbanfrill
-E-Commerce Store
->>>>>>> fdc20beefa8a5be55bb7d0fd2c21351663e2ad2c
+```bash
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
+
+# Deploy to GitHub Pages
+npm run deploy
+```
+
+## 🗂️ Project Structure
+
+```
+src/
+├── components/
+│   ├── HomePage.jsx          # Home page with products
+│   ├── CategoryPage.jsx       # Category-specific pages
+│   ├── ProductPage.jsx        # Product detail page
+│   ├── Header.jsx             # Navigation header
+│   ├── ProductFilter.jsx      # Filter sidebar
+│   ├── Cart/
+│   ├── Auth/
+│   └── ... other components
+├── context/
+│   ├── AuthContext.jsx        # Auth state management
+│   ├── CartContext.jsx        # Cart state management
+├── data/
+│   └── products.js            # Product database
+└── utils/
+    ├── asset.js               # Asset helpers
+    └── scrollToTop.js         # Navigation utilities
+```
+
+## 🗺️ Routes
+
+| Route | Component | Description |
+|-------|-----------|-------------|
+| `/` | HomePage | Home page with hero and products |
+| `/category/:category` | CategoryPage | Category filtered products |
+| `/product/:productId` | ProductPage | Product details |
+
+## 🎯 Key Components
+
+### HomePage
+- Hero section
+- Product grid
+- Filter sidebar (desktop) + drawer (mobile)
+- Search functionality
+
+### CategoryPage
+- Dynamic category filtering
+- Same UI/UX as homepage
+- URL-based navigation
+
+### Header
+- Navigation links
+- Category dropdowns
+- Mobile hamburger menu
+- Shopping cart icon
+- User profile
+
+## 🔒 Authentication
+
+- Firebase Email/Password auth
+- Google Sign-In
+- Auth state persisted in context
+- Protected cart functionality
+
+## 🛒 Shopping Cart
+
+- Add items to cart
+- Quantity management
+- Cart persisted in browser context
+- WhatsApp integration for purchases
+
+## 📱 Responsive Design
+
+- Desktop: Full sidebar + header
+- Tablet: Responsive grid
+- Mobile: Hamburger menu + drawer filters
+
+## 🎨 Styling
+
+- Tailwind CSS for utility styles
+- Custom CSS for component-specific styles
+- Mobile-first approach
+- CSS animations and transitions
+
+## 🚀 Deployment
+
+### GitHub Pages
+
+```bash
+npm run deploy
+```
+
+Live at: https://shriramjangid666.github.io/urbanfrill/
+
+### Environment Variables
+
+Create `.env.local`:
+```
+VITE_FIREBASE_API_KEY=your_key
+VITE_FIREBASE_AUTH_DOMAIN=your_domain
+# ... other Firebase config
+```
+
+## 📋 Recent Updates
+
+- ✅ Migrated from hash routing to React Router v6
+- ✅ Fixed blank screen issues on navigation
+- ✅ Created dedicated category pages
+- ✅ Improved URL structure and sharability
+- ✅ Enhanced mobile navigation
+
+## 🐛 Known Issues & Solutions
+
+See `ROUTING_CHANGES.md` and `DEPLOYMENT_GUIDE.md` for detailed information.
+
+## 📝 Development Guidelines
+
+1. **Components**: Functional components with hooks
+2. **State Management**: Context API for global state
+3. **Routing**: React Router v6 with useParams and useNavigate
+4. **Assets**: Use `/utils/asset.js` for image paths
+5. **Styling**: BEM naming convention for custom CSS
+
+## 🔄 Build & Deploy
+
+```bash
+# Development
+npm run dev
+
+# Production build
+npm run build
+
+# Deploy (requires GitHub permissions)
+npm run deploy
+
+# Lint code
+npm run lint
+```
+
+## 📞 Support
+
+For detailed routing documentation, see:
+- `ROUTING_CHANGES.md` - Complete migration details
+- `DEPLOYMENT_GUIDE.md` - Deployment instructions
+
+## 📄 License
+
+All rights reserved © UrbanFrill
+
+---
+
+**Status**: Production Ready ✅  
+**Last Updated**: November 13, 2025

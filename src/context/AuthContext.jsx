@@ -9,7 +9,8 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
 } from "firebase/auth";
-import { auth } from "../firebase";
+import { auth, db } from "../firebase";
+import { doc, setDoc } from "firebase/firestore";
 import { AuthContext } from "./AuthContextValue";
 
 // eslint-disable-next-line react-refresh/only-export-components
@@ -20,9 +21,29 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (u) => {
+    const unsub = onAuthStateChanged(auth, async (u) => {
       setUser(u);
       setLoading(false);
+      // Persist minimal user profile to Firestore for later use (non-blocking)
+      try {
+        if (u && db) {
+          const ref = doc(db, "users", u.uid);
+          await setDoc(
+            ref,
+            {
+              uid: u.uid,
+              email: u.email || null,
+              displayName: u.displayName || null,
+              photoURL: u.photoURL || null,
+              lastSeen: new Date().toISOString(),
+            },
+            { merge: true }
+          );
+        }
+      } catch (err) {
+        // Non-fatal: ignore Firestore errors but keep auth working
+        // console.warn("Failed to write user profile to Firestore:", err);
+      }
     });
     return unsub;
   }, []);
@@ -33,6 +54,20 @@ export function AuthProvider({ children }) {
     if (displayName) {
       await updateProfile(signedUser, { displayName });
       setUser({ ...signedUser, displayName });
+    }
+    // write user profile to Firestore
+    try {
+      if (signedUser && db) {
+        await setDoc(doc(db, "users", signedUser.uid), {
+          uid: signedUser.uid,
+          email: signedUser.email || null,
+          displayName: displayName || signedUser.displayName || null,
+          photoURL: signedUser.photoURL || null,
+          createdAt: new Date().toISOString(),
+        }, { merge: true });
+      }
+    } catch (err) {
+      // ignore
     }
     return signedUser;
   };
