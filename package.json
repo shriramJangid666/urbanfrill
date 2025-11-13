@@ -10,7 +10,8 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist"
+    "deploy": "gh-pages -d dist",
+    "convert-images": "node tools/convert-images.js"
   },
   "dependencies": {
     "file-saver": "^2.0.5",
@@ -37,5 +38,12 @@
     "prettier": "^3.6.2",
     "tailwindcss": "^4.1.17",
     "vite": "^7.1.7"
+    ,
+    "sharp": "^0.32.4"
+  }
+  ,
+  "optionalDependencies": {},
+  "engines": {
+    "node": ">=16"
   }
 }

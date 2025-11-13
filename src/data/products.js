@@ -6,7 +6,7 @@ const PRODUCTS = [
     desc: "Custom made | Free on-site measuring",
     price: 299,
     category: "Curtains",
-    images: ["/images/hero-left.jpg"],          // ✅ exists
+  images: ["/images/hero-left.webp"],          // ✅ converted to webp
   },
   {
     id: 2,
@@ -14,7 +14,7 @@ const PRODUCTS = [
     desc: "Vinyl, easy-clean finish",
     price: 799,
     category: "Wallpapers",
-    images: ["/images/hero-topright.jpg"],      // ✅ exists
+  images: ["/images/hero-topright.webp"],      // ✅ converted to webp
   },
   {
     id: 3,
@@ -22,7 +22,7 @@ const PRODUCTS = [
     desc: "Premium fabric, stitched",
     price: 1499,
     category: "Bedback",
-    images: ["/images/hero-bottomright.jpg"],   // ✅ exists
+  images: ["/images/hero-bottomright.webp"],   // ✅ converted to webp
   },
 ];
 
@@ -34,7 +34,7 @@ PRODUCTS.push(
     desc: "Airy weave with soft diffused light.",
     category: "Curtains",
     price: 2490,
-    image: "images/hero-curtain.jpg",
+  image: "images/hero-curtain.webp",
   },
   {
     id: 902,
@@ -42,7 +42,7 @@ PRODUCTS.push(
     desc: "Matte finish, easy-clean | 57 sq.ft roll",
     category: "Wallpapers",
     price: 1990,
-    image: "images/hero-wallpaper.jpg",
+  image: "images/hero-wallpaper.webp",
   },
   {
     id: 903,
@@ -50,7 +50,7 @@ PRODUCTS.push(
     desc: "Upholstered, tufted, custom sizes",
     category: "Bedback & Sofa",
     price: 12990,
-    image: "images/hero-bedback.jpg",
+  image: "images/hero-bedback.webp",
   },
   {
     id: 904,
@@ -58,7 +58,7 @@ PRODUCTS.push(
     desc: "Medium-firm with zoned support",
     category: "Mattress",
     price: 17990,
-    image: "images/hero-mattress.jpg",
+  image: "images/hero-mattress.webp",
   },
   {
     id: 905,
@@ -66,7 +66,7 @@ PRODUCTS.push(
     desc: "Precise light control with sleek look",
     category: "Blinds",
     price: 5490,
-    image: "images/hero-blinds.jpg",
+  image: "images/hero-blinds.webp",
   },
   {
     id: 906,
@@ -74,7 +74,7 @@ PRODUCTS.push(
     desc: "Durable planks | easy install",
     category: "Wood & PVC Flooring",
     price: 2990,
-    image: "images/hero-flooring.jpg",
+  image: "images/hero-flooring.webp",
   }
 );
 

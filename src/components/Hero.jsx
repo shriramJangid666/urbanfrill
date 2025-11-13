@@ -16,12 +16,12 @@ const CATS = [
 ];
 
 const fileMap = {
-  curtains: "hero-curtain.jpg",
-  wallpapers: "hero-wallpaper.jpg",
-  bedback: "hero-bedback.jpg",
-  mattress: "hero-mattress.jpg",
-  blinds: "hero-blinds.jpg",
-  flooring: "hero-flooring.jpg",
+  curtains: "hero-curtain.webp",
+  wallpapers: "hero-wallpaper.webp",
+  bedback: "hero-bedback.webp",
+  mattress: "hero-mattress.webp",
+  blinds: "hero-blinds.webp",
+  flooring: "hero-flooring.webp",
 };
 
 const copy = {
@@ -67,7 +67,7 @@ function FeaturedSlide({ priority = false }) {
     <div className="hero-collage">
       <figure className="collage-big card">
         <img
-          src={asset("images/hero-left.jpg")}
+          src={asset("images/hero-left.webp")}
           alt="Featured large"
           loading={priority ? "eager" : "lazy"}
           decoding="async"
@@ -76,7 +76,7 @@ function FeaturedSlide({ priority = false }) {
       </figure>
       <figure className="collage-small top card">
         <img
-          src={asset("images/hero-topright.jpg")}
+          src={asset("images/hero-topright.webp")}
           alt="Featured detail 1"
           loading="lazy"
           decoding="async"
@@ -84,7 +84,7 @@ function FeaturedSlide({ priority = false }) {
       </figure>
       <figure className="collage-small bottom card">
         <img
-          src={asset("images/hero-bottomright.jpg")}
+          src={asset("images/hero-bottomright.webp")}
           alt="Featured detail 2"
           loading="lazy"
           decoding="async"

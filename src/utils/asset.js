@@ -3,7 +3,7 @@ export const asset = (p) =>
   `${import.meta.env.BASE_URL}${String(p || "").replace(/^\/+/, "")}`;
 
 /**
- * Return a CLEAN, RELATIVE image path like "images/hero-left.jpg"
+ * Return a CLEAN, RELATIVE image path like "images/hero-left.webp"
  * - strips /urbanfrill/ base
  * - removes any leading slash
  * - normalizes "./" and "public/"
@@ -31,6 +31,9 @@ export const productPath = (p) => {
   raw = raw.replace(/^urbanfrill\/+/, "");
 
   if (!raw.startsWith("images/")) raw = `images/${raw}`;
+  // Prefer WebP: if the path references a JPEG, switch to .webp
+  // (we only change local image paths; absolute URLs and data: URIs are left alone)
+  raw = raw.replace(/\.(jpe?g)$/i, ".webp");
   return raw;
 };
 
