@@ -103,7 +103,7 @@ function SingleSlide({ id, label, priority = false }) {
         alt={label}
         loading={priority ? "eager" : "lazy"}
         decoding="async"
-        fetchpriority={priority ? "high" : "auto"}
+        fetchPriority={priority ? "high" : "auto"}
       />
       <figcaption className="badge">{label}</figcaption>
       <div className="scrim" />
