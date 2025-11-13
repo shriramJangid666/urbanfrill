@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useCallback, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import ProductCard from "./ProductCard";
 import ProductFilter from "./ProductFilter";
 import ScrollReveal from "./ScrollReveal";
@@ -11,6 +11,7 @@ import "./product-page.css";
 function CategoryPage({ promptLogin = () => {} }) {
   const { category } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
 
   // Filters (search + price + sort)
   const [query, setQuery] = useState("");
@@ -74,8 +75,12 @@ function CategoryPage({ promptLogin = () => {} }) {
 
   // Preload images
   useEffect(() => {
-    const PRELOAD_COUNT = 12;
-    const REQUIRED_LOADED = 4;
+    // On mobile, reduce preload count and timeout for faster initial display
+    const isMobile = window.innerWidth < 768;
+    const PRELOAD_COUNT = isMobile ? 6 : 12;
+    const REQUIRED_LOADED = isMobile ? 2 : 4;
+    const TIMEOUT_MS = isMobile ? 800 : 1200;
+
     const toPreload = filtered
       .slice(0, PRELOAD_COUNT)
       .map((p) => (Array.isArray(p.images) && p.images[0]) || p.image)
@@ -96,7 +101,7 @@ function CategoryPage({ promptLogin = () => {} }) {
       imgs.splice(0, imgs.length);
     };
 
-    const timeout = setTimeout(() => finish(), 1200);
+    const timeout = setTimeout(() => finish(), TIMEOUT_MS);
 
     toPreload.forEach((src) => {
       try {
@@ -131,9 +136,9 @@ function CategoryPage({ promptLogin = () => {} }) {
   const openProduct = useCallback(
     (product) => {
       if (!product) return;
-      navigate(`/product/${product.id}`);
+      navigate(`/product/${product.id}`, { state: { from: location.pathname } });
     },
-    [navigate]
+    [navigate, location.pathname]
   );
 
   const handleCategoryChange = useCallback(

@@ -13,7 +13,7 @@ const PRIMARY = [
   { label: "Home", to: "/" },
   { label: "Products", to: "/category/All" },
   { label: "About us", to: "/" },
-  { label: "Contact us", to: "/" },
+  { label: "Contact us", to: "/#contact" },
 ];
 
 const NAV = [
@@ -93,7 +93,18 @@ function Header({ onRequestAuth = () => {} }) {
 
   const handleNavigate = useCallback(
     (to) => {
-      navigate(to);
+      if (to && to.startsWith("/#")) {
+        // Scroll to element on same page
+        const elementId = to.substring(2);
+        setTimeout(() => {
+          const element = document.getElementById(elementId);
+          if (element) {
+            element.scrollIntoView({ behavior: "smooth" });
+          }
+        }, 100);
+      } else {
+        navigate(to);
+      }
       setMenuOpen(false);
     },
     [navigate]
@@ -141,9 +152,15 @@ function Header({ onRequestAuth = () => {} }) {
           {/* Center: primary links */}
           <nav className="uf3-primary" aria-label="Primary">
             {PRIMARY.map((p) => (
-              <Link key={p.label} to={p.to}>
-                {p.label}
-              </Link>
+              p.to.startsWith("/#") ? (
+                <button key={p.label} onClick={() => handleNavigate(p.to)} className="uf3-link">
+                  {p.label}
+                </button>
+              ) : (
+                <Link key={p.label} to={p.to} onClick={() => setMenuOpen(false)}>
+                  {p.label}
+                </Link>
+              )
             ))}
           </nav>
 
@@ -204,7 +221,13 @@ function Header({ onRequestAuth = () => {} }) {
           <nav className="uf3-cats" aria-label="Categories">
             {NAV.map((m) => (
               <div key={m.label} className="uf3-cat">
-                <button className="uf3-catbtn" onClick={() => handleNavigate(m.to)}>
+                <button
+                  className="uf3-catbtn"
+                  onClick={(e) => {
+                    handleNavigate(m.to);
+                    e.currentTarget.blur();
+                  }}
+                >
                   {m.label}
                   <svg
                     className="uf3-caret"
@@ -242,6 +265,12 @@ function Header({ onRequestAuth = () => {} }) {
                   <Link
                     className="uf3-viewall"
                     to={m.to}
+                    onClick={() => {
+                      setMenuOpen(false);
+                      document
+                        .querySelectorAll(".uf3-cat")
+                        .forEach((el) => el.blur());
+                    }}
                   >
                     View all {m.label} →
                   </Link>
@@ -318,13 +347,23 @@ function Header({ onRequestAuth = () => {} }) {
           {/* Primary links */}
           <div className="uf3-mobile-primary">
             {PRIMARY.map((p) => (
-              <Link
-                key={p.label}
-                to={p.to}
-                onClick={() => setMenuOpen(false)}
-              >
-                {p.label}
-              </Link>
+              p.to.startsWith("/#") ? (
+                <button
+                  key={p.label}
+                  className="uf3-mobile-link"
+                  onClick={() => handleNavigate(p.to)}
+                >
+                  {p.label}
+                </button>
+              ) : (
+                <Link
+                  key={p.label}
+                  to={p.to}
+                  onClick={() => setMenuOpen(false)}
+                >
+                  {p.label}
+                </Link>
+              )
             ))}
           </div>
 

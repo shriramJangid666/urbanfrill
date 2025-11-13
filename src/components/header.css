@@ -67,16 +67,22 @@
   gap: 14px;
   min-width: 0;
 }
-.uf3-primary a {
+.uf3-primary a,
+.uf3-link {
   color: var(--fg);
   text-decoration: none;
   font-weight: 700;
   font-size: 0.95rem;
   padding: 6px 8px;
   border-radius: 10px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
 }
 .uf3-primary a:hover,
-.uf3-primary a:focus-visible {
+.uf3-primary a:focus-visible,
+.uf3-link:hover,
+.uf3-link:focus-visible {
   background: #f5f7fb;
 }
 
@@ -361,14 +367,20 @@
   gap: 8px;
   padding: 12px 16px;
 }
-.uf3-mobile-primary a {
+.uf3-mobile-primary a,
+.uf3-mobile-link {
   padding: 10px 12px;
   border-radius: 10px;
   color: var(--fg);
   text-decoration: none;
   font-weight: 600;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
 }
-.uf3-mobile-primary a:hover {
+.uf3-mobile-primary a:hover,
+.uf3-mobile-link:hover {
   background: #f5f7fb;
 }
 

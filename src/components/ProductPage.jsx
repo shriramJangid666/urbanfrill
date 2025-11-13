@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useLayoutEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/useAuth";
 import { useCart } from "../context/CartContext";
 import { productImg, asset } from "../utils/asset";
@@ -10,6 +10,7 @@ import "./product-page.css";
 export default function ProductPage({ promptLogin = () => {} }) {
   const { productId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuth();
   const { addToCart } = useCart();
   const [added, setAdded] = useState(false);
@@ -51,6 +52,15 @@ export default function ProductPage({ promptLogin = () => {} }) {
     );
   }
 
+  const handleBackClick = () => {
+    // Try to go back if we came from a category or home page
+    if (location.state?.from) {
+      navigate(location.state.from);
+    } else {
+      navigate(-1);
+    }
+  };
+
   const current = images[idx] || "images/placeholder.png";
 
   const handleAdd = () => {
@@ -75,7 +85,7 @@ export default function ProductPage({ promptLogin = () => {} }) {
       style={{ maxWidth: 1100, margin: "40px auto", padding: "0 18px" }}
     >
       <button
-        onClick={() => (window.location.hash = "#products")}
+        onClick={handleBackClick}
         className="pp-back"
       >
         ← Back to Products
@@ -89,6 +99,7 @@ export default function ProductPage({ promptLogin = () => {} }) {
               src={productImg(current)}
               alt={product.name}
               loading="eager"
+              sizes="(max-width:640px) 100vw, (max-width:1100px) 50vw, 50vw"
               onError={(e) =>
                 (e.currentTarget.src = asset("images/placeholder.png"))
               }

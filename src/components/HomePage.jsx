@@ -1,5 +1,5 @@
 import React, { useMemo, useCallback, useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import Hero from "./Hero";
 import ProductCard from "./ProductCard";
 import SkeletonProductCard from "./SkeletonProductCard";
@@ -13,6 +13,7 @@ import "./product-page.css";
 
 function HomePage({ promptLogin = () => {} }) {
   const navigate = useNavigate();
+  const location = useLocation();
 
   // Filters (category + search)
   const [category, setCategory] = useState("All");
@@ -126,8 +127,8 @@ function HomePage({ promptLogin = () => {} }) {
 
   const openProduct = useCallback((product) => {
     if (!product) return;
-    navigate(`/product/${product.id}`);
-  }, [navigate]);
+    navigate(`/product/${product.id}`, { state: { from: location.pathname } });
+  }, [navigate, location.pathname]);
 
   const handleCategorySelect = useCallback(
     (cat) => {
@@ -322,10 +323,12 @@ function HomePage({ promptLogin = () => {} }) {
       </section>
 
       <ScrollReveal direction="up">
-        <ContactForm />
+        <section id="contact">
+          <ContactForm />
+        </section>
       </ScrollReveal>
 
-      <section id="contact">
+      <section>
         <Footer />
       </section>
     </main>
