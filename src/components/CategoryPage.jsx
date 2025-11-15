@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useCallback, useEffect } from "react";
+import React, { useMemo, useState, useCallback, useEffect, useRef } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import ProductCard from "./ProductCard";
 import ProductFilter from "./ProductFilter";
@@ -19,6 +19,26 @@ function CategoryPage({ promptLogin = () => {} }) {
   const [priceMax, setPriceMax] = useState(null);
   const [sort, setSort] = useState("relevance");
   const [productsLoading, setProductsLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  
+  // Responsive products per page: 3 on mobile, 8 on desktop
+  const [productsPerPage, setProductsPerPage] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return window.innerWidth < 768 ? 3 : 8;
+    }
+    return 8;
+  });
+  
+  // Update products per page on window resize
+  useEffect(() => {
+    const handleResize = () => {
+      setProductsPerPage(window.innerWidth < 768 ? 3 : 8);
+      setCurrentPage(1); // Reset to page 1 on resize
+    };
+    
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Get categories list
   const categories = useMemo(() => {
@@ -72,6 +92,31 @@ function CategoryPage({ promptLogin = () => {} }) {
 
     return list;
   }, [category, query, priceMin, priceMax, sort, prices]);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [category, query, priceMin, priceMax, sort]);
+
+  // Scroll to top of page when page changes (not on initial mount)
+  const isInitialMount = useRef(true);
+  useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+    
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  }, [currentPage]);
+
+  // Pagination calculations
+  const totalPages = Math.ceil(filtered.length / productsPerPage);
+  const startIndex = (currentPage - 1) * productsPerPage;
+  const endIndex = startIndex + productsPerPage;
+  const paginatedProducts = filtered.slice(startIndex, endIndex);
 
   // Preload images
   useEffect(() => {
@@ -153,6 +198,7 @@ function CategoryPage({ promptLogin = () => {} }) {
     setPriceMin(prices.min);
     setPriceMax(prices.max);
     setSort("relevance");
+    setCurrentPage(1);
     navigate("/category/All");
   }, [prices.min, prices.max, navigate]);
 
@@ -210,17 +256,17 @@ function CategoryPage({ promptLogin = () => {} }) {
               style={{ maxWidth: "1100px", margin: "20px auto" }}
             >
               {productsLoading
-                ? Array.from({ length: 8 }).map((_, i) => (
+                ? Array.from({ length: productsPerPage }).map((_, i) => (
                     <SkeletonProductCard key={`sk-${i}`} />
                   ))
-                : filtered.length > 0 ? (
-                    filtered.map((p, i) => (
+                : paginatedProducts.length > 0 ? (
+                    paginatedProducts.map((p, i) => (
                       <ProductCard
                         key={p.id}
                         product={p}
                         onView={openProduct}
                         promptLogin={promptLogin}
-                        index={i}
+                        index={startIndex + i}
                       />
                     ))
                   ) : (
@@ -236,6 +282,45 @@ function CategoryPage({ promptLogin = () => {} }) {
                   )}
             </div>
           </ScrollReveal>
+
+          {/* Pagination Controls */}
+          {!productsLoading && filtered.length > productsPerPage && (
+            <div className="pagination-container">
+              <button
+                className="pagination-btn"
+                onClick={() => {
+                  setCurrentPage((prev) => Math.max(1, prev - 1));
+                }}
+                disabled={currentPage === 1}
+                aria-label="Previous page"
+              >
+                Previous
+              </button>
+              <div className="pagination-pages">
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  <button
+                    key={page}
+                    className={`pagination-page ${currentPage === page ? "active" : ""}`}
+                    onClick={() => setCurrentPage(page)}
+                    aria-label={`Go to page ${page}`}
+                    aria-current={currentPage === page ? "page" : undefined}
+                  >
+                    {page}
+                  </button>
+                ))}
+              </div>
+              <button
+                className="pagination-btn"
+                onClick={() => {
+                  setCurrentPage((prev) => Math.min(totalPages, prev + 1));
+                }}
+                disabled={currentPage === totalPages}
+                aria-label="Next page"
+              >
+                Next
+              </button>
+            </div>
+          )}
         </div>
       </div>
 

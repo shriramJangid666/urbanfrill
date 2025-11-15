@@ -411,6 +411,76 @@
   background: #f5f7fb;
 }
 
+/* Mobile Featured Products Section */
+.uf3-mobile-products {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--line);
+}
+
+.uf3-mobile-products-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--fg);
+  margin: 0 0 12px 0;
+}
+
+.uf3-mobile-products-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.uf3-mobile-products-grid .pc-card {
+  min-width: 0;
+  width: 100%;
+  min-height: auto;
+  box-shadow: 0 4px 12px rgba(12, 12, 12, 0.04);
+}
+
+.uf3-mobile-products-grid .pc-media {
+  height: 100px;
+}
+
+.uf3-mobile-products-grid .pc-body {
+  padding: 8px;
+}
+
+.uf3-mobile-products-grid .pc-title {
+  font-size: 0.85rem;
+  margin: 0 0 4px 0;
+  line-height: 1.3;
+}
+
+.uf3-mobile-products-grid .pc-desc {
+  font-size: 0.75rem;
+  margin: 0 0 6px 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.uf3-mobile-products-grid .pc-price {
+  font-size: 0.9rem;
+  margin-bottom: 6px;
+}
+
+.uf3-mobile-products-grid .pc-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.uf3-mobile-products-grid .pc-btn {
+  padding: 6px 8px;
+  font-size: 0.75rem;
+  border-radius: 6px;
+}
+
+.uf3-mobile-products-grid .pc-footer {
+  margin-top: auto;
+}
+
 /* Mobile category accordions */
 .uf3-mobile-cats {
   padding: 0 0 16px 0;

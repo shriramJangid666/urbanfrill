@@ -7,6 +7,8 @@ import { asset } from "../utils/asset";
 import { TiShoppingCart } from "react-icons/ti";
 import { CiUser } from "react-icons/ci";
 import UserDropdown from "./UserDropdown";
+import ProductCard from "./ProductCard";
+import PRODUCTS from "../data/products";
 import "./header.css";
 
 const PRIMARY = [
@@ -135,6 +137,17 @@ function Header({ onRequestAuth = () => {} }) {
   }, [user, onRequestAuth]);
 
   const toggleMenu = useCallback(() => setMenuOpen((v) => !v), []);
+
+  // Get 3 featured products for mobile menu
+  const featuredProducts = useMemo(() => {
+    return PRODUCTS.slice(0, 3);
+  }, []);
+
+  const openProduct = useCallback((product) => {
+    if (!product) return;
+    navigate(`/product/${product.id}`, { state: { from: location.pathname } });
+    setMenuOpen(false);
+  }, [navigate, location.pathname]);
 
   return (
     <>
@@ -455,6 +468,22 @@ function Header({ onRequestAuth = () => {} }) {
                 </Link>
               )
             ))}
+          </div>
+
+          {/* Featured Products Section */}
+          <div className="uf3-mobile-products">
+            <h3 className="uf3-mobile-products-title">Featured Products</h3>
+            <div className="uf3-mobile-products-grid">
+              {featuredProducts.map((product, index) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  onView={openProduct}
+                  promptLogin={() => {}}
+                  index={index}
+                />
+              ))}
+            </div>
           </div>
 
           {/* Category accordions */}
