@@ -1,7 +1,6 @@
 /* Sidebar filter */
 .pf-aside {
-  position: sticky;
-  top: 82px; /* sits under your sticky header */
+  position: static;
   align-self: start;
 }
 
@@ -70,8 +69,7 @@
 
 /* Space & compact look */
 .pf-aside {
-  position: sticky;
-  top: 82px;
+  position: static;
   align-self: start;
 }
 .pf-aside-inner {
@@ -241,8 +239,7 @@
 /* Keep mobile filter visible while scrolling (horizontal chips) */
 @media (max-width: 880px) {
   .pf-aside {
-    position: sticky;
-    top: 74px;
+    position: static;
     z-index: 1;
   }
   .pf-aside-inner {
@@ -266,8 +263,7 @@
 
 /* Compact block */
 .pf-aside {
-  position: sticky;
-  top: 82px;
+  position: static;
   align-self: start;
 }
 .pf-aside-inner {
@@ -311,10 +307,9 @@
 
 /* ---------- Mobile behavior ---------- */
 @media (max-width: 880px) {
-  /* Sidebar becomes a sticky horizontal chip row under the header */
+  /* Sidebar becomes a horizontal chip row */
   .pf-aside {
-    position: sticky;
-    top: 74px;
+    position: static;
     z-index: 2;
   }
   .pf-aside-inner {
@@ -358,8 +353,7 @@
 
 /* Keep sidebar tidy and inside page */
 .pf-aside {
-  position: sticky;
-  top: 82px;
+  position: static;
   align-self: start;
 }
 .pf-aside-inner {

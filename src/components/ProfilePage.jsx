@@ -12,7 +12,8 @@ import "./profile-page.css";
 export default function ProfilePage() {
   const navigate = useNavigate();
   const { user, logout, updateProfilePicture } = useAuth();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [loadingProgress, setLoadingProgress] = useState(0);
   const [saving, setSaving] = useState(false);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [error, setError] = useState("");
@@ -43,15 +44,23 @@ export default function ProfilePage() {
 
     const loadUserData = async () => {
       setLoading(true);
+      setLoadingProgress(0);
+      
       try {
-        // Load from Firebase Auth
+        // Step 1: Load from Firebase Auth (instant, 50%)
+        setLoadingProgress(50);
+        const capitalizedName = user.displayName 
+          ? user.displayName.charAt(0).toUpperCase() + user.displayName.slice(1).toLowerCase()
+          : "";
+        
         setFormData((prev) => ({
           ...prev,
-          displayName: user.displayName || "",
+          displayName: capitalizedName,
           email: user.email || "",
         }));
 
-        // Load additional data from Firestore
+        // Step 2: Load additional data from Firestore (background, 50-100%)
+        setLoadingProgress(75);
         if (db && user.uid) {
           const userRef = doc(db, "users", user.uid);
           const userSnap = await getDoc(userRef);
@@ -67,11 +76,16 @@ export default function ProfilePage() {
             }));
           }
         }
+        setLoadingProgress(100);
+        
+        // Small delay to show 100% before hiding loader
+        await new Promise(resolve => setTimeout(resolve, 200));
       } catch (err) {
         console.error("Error loading user data:", err);
         setError("Failed to load profile data");
       } finally {
         setLoading(false);
+        setLoadingProgress(0);
       }
     };
 
@@ -99,9 +113,18 @@ export default function ProfilePage() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Validate file type
-    if (!file.type.startsWith("image/")) {
-      setError("Please select an image file");
+    // Validate file type - accept common image formats
+    const validImageTypes = [
+      "image/jpeg",
+      "image/jpg", 
+      "image/png",
+      "image/gif",
+      "image/webp",
+      "image/svg+xml"
+    ];
+    
+    if (!file.type.startsWith("image/") || !validImageTypes.includes(file.type.toLowerCase())) {
+      setError("Please select a valid image file (JPEG, PNG, GIF, WebP, or SVG)");
       return;
     }
 
@@ -116,7 +139,10 @@ export default function ProfilePage() {
     setSuccess("");
 
     try {
-      await updateProfilePicture(file);
+      console.log("📤 Starting profile picture upload...");
+      const photoURL = await updateProfilePicture(file);
+      
+      console.log("✅ Profile picture uploaded successfully:", photoURL);
       setSuccess("Profile picture updated successfully!");
       setTimeout(() => setSuccess(""), 3000);
       
@@ -124,10 +150,31 @@ export default function ProfilePage() {
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
+      
+      // Force a page refresh to ensure image updates everywhere
+      // Small delay to let the state update first
+      setTimeout(() => {
+        console.log("🔄 Reloading page to show updated image...");
+        window.location.reload();
+      }, 1000);
+      
     } catch (err) {
-      console.error("Error uploading photo:", err);
-      setError(err.message || "Failed to update profile picture");
-    } finally {
+      console.error("❌ Error uploading photo:", err);
+      let errorMsg = err.message || "Failed to update profile picture.";
+      
+      // Check for CORS error
+      if (err.message?.includes('CORS') || err.message?.includes('cors') || 
+          err.originalError?.message?.includes('CORS') || 
+          err.originalError?.message?.includes('cors') ||
+          err.code?.includes('CORS') || err.code?.includes('cors')) {
+        errorMsg = "CORS Error: Firebase Storage CORS is not configured. Please run 'npm run setup-cors' or see FIREBASE_STORAGE_CORS_FIX.md for setup instructions.";
+      } else if (err.message?.includes('unauthorized') || err.code === 'storage/unauthorized') {
+        errorMsg = "Storage access denied. Please check Firebase Storage rules in Firebase Console → Storage → Rules.";
+      } else if (err.message?.includes('network') || err.message?.includes('Network')) {
+        errorMsg = "Network error. Please check your internet connection and try again.";
+      }
+      
+      setError(errorMsg);
       setUploadingPhoto(false);
     }
   };
@@ -185,7 +232,17 @@ export default function ProfilePage() {
     return (
       <div className="profile-page">
         <div className="profile-container">
-          <div className="profile-loading">Loading profile...</div>
+          <div className="profile-loading">
+            <div className="profile-loading-spinner"></div>
+            <div className="profile-loading-text">Loading profile...</div>
+            <div className="profile-loading-progress">
+              <div 
+                className="profile-loading-progress-bar"
+                style={{ width: `${loadingProgress}%` }}
+              ></div>
+            </div>
+            <div className="profile-loading-percentage">{loadingProgress}%</div>
+          </div>
         </div>
       </div>
     );
@@ -209,12 +266,26 @@ export default function ProfilePage() {
             <div className="profile-avatar-wrapper">
               <div className="profile-avatar">
                 {user.photoURL ? (
-                  <img src={user.photoURL} alt={user.displayName || "User"} />
-                ) : (
-                  <div className="profile-avatar-placeholder">
-                    {user.displayName?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase() || "U"}
-                  </div>
-                )}
+                  <img 
+                    key={user.photoURL}
+                    src={user.photoURL} 
+                    alt={user.displayName || "User"}
+                    loading="eager"
+                    onError={(e) => {
+                      e.currentTarget.style.display = "none";
+                      const placeholder = e.currentTarget.nextElementSibling;
+                      if (placeholder) {
+                        placeholder.style.display = "flex";
+                      }
+                    }}
+                  />
+                ) : null}
+                <div 
+                  className="profile-avatar-placeholder"
+                  style={{ display: user.photoURL ? "none" : "flex" }}
+                >
+                  {user.displayName?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase() || "U"}
+                </div>
                 {uploadingPhoto && (
                   <div className="profile-avatar-overlay">
                     <div className="profile-avatar-spinner"></div>
@@ -229,7 +300,7 @@ export default function ProfilePage() {
                 ref={fileInputRef}
                 id="profile-photo-upload"
                 type="file"
-                accept="image/*"
+                accept="image/jpeg,image/jpg,image/png,image/gif,image/webp,image/svg+xml"
                 style={{ display: "none" }}
                 onChange={handlePhotoUpload}
                 disabled={uploadingPhoto}

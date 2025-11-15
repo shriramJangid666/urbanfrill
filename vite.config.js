@@ -9,5 +9,10 @@ export default defineConfig({
     host: '0.0.0.0', // Listen on all network interfaces
     port: 5173,
     strictPort: false, // Allow port to be changed if 5173 is taken
+    headers: {
+      // Allow popups for Razorpay and Firebase Auth
+      'Cross-Origin-Opener-Policy': 'same-origin-allow-popups',
+      'Cross-Origin-Embedder-Policy': 'unsafe-none',
+    },
   },
 })

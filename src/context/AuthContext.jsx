@@ -86,54 +86,150 @@ export function AuthProvider({ children }) {
       throw new Error("User not authenticated or no file provided");
     }
 
+    const userId = auth.currentUser.uid;
+    let photoURL = null;
+    let uploadedFileRef = null;
+
     try {
-      // Delete old profile picture if exists (only if it's in our storage)
-      if (auth.currentUser.photoURL && storage) {
+      console.log("📤 Starting profile picture upload for user:", userId);
+
+      // Step 1: Upload new profile picture to Firebase Storage
+      console.log("📤 Step 1: Uploading file to Firebase Storage...");
+      
+      if (!storage) {
+        throw new Error("Firebase Storage is not initialized. Please check your Firebase configuration.");
+      }
+
+      const timestamp = Date.now();
+      const sanitizedFileName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+      const storagePath = `profile-pictures/${userId}/${timestamp}_${sanitizedFileName}`;
+      uploadedFileRef = ref(storage, storagePath);
+      
+      // Upload with metadata
+      const metadata = {
+        contentType: file.type || 'image/jpeg',
+        cacheControl: 'public, max-age=31536000',
+        customMetadata: {
+          uploadedBy: userId,
+          uploadedAt: new Date().toISOString(),
+        },
+      };
+      
+      console.log("📤 Uploading to path:", storagePath);
+      await uploadBytes(uploadedFileRef, file, metadata);
+      console.log("✅ File uploaded successfully");
+
+      // Step 2: Get download URL
+      console.log("📤 Step 2: Getting download URL...");
+      photoURL = await getDownloadURL(uploadedFileRef);
+      console.log("✅ Download URL obtained:", photoURL);
+
+      // Step 3: Update Firebase Auth profile
+      console.log("📤 Step 3: Updating Firebase Auth profile...");
+      await updateProfile(auth.currentUser, { photoURL });
+      console.log("✅ Firebase Auth profile updated");
+
+      // Step 4: Update Firestore with complete user data
+      console.log("📤 Step 4: Updating Firestore database...");
+      if (db) {
+        const userRef = doc(db, "users", userId);
+        const userData = {
+          uid: userId,
+          email: auth.currentUser.email || null,
+          displayName: auth.currentUser.displayName || null,
+          photoURL: photoURL, // Store the new photoURL
+          updatedAt: new Date().toISOString(),
+          // Preserve existing data by getting current user data first
+          ...(auth.currentUser.displayName && { displayName: auth.currentUser.displayName }),
+        };
+        
+        console.log("📤 Saving to Firestore:", userData);
+        await setDoc(userRef, userData, { merge: true });
+        console.log("✅ Firestore updated successfully");
+      } else {
+        console.warn("⚠️ Firestore not initialized, skipping database update");
+      }
+
+      // Step 5: Reload user from auth to get the updated photoURL
+      console.log("📤 Step 5: Reloading user from Firebase Auth...");
+      await auth.currentUser.reload();
+      console.log("✅ User reloaded");
+
+      // Step 6: Update local state
+      console.log("📤 Step 6: Updating local state...");
+      const updatedUser = {
+        ...auth.currentUser,
+        photoURL: photoURL
+      };
+      setUser(updatedUser);
+      console.log("✅ Local state updated");
+
+      // Step 7: Clean up old profile picture (do this after successful update)
+      if (auth.currentUser.photoURL && auth.currentUser.photoURL !== photoURL) {
         try {
-          // Only delete if it's a Firebase Storage URL
-          if (auth.currentUser.photoURL.includes("firebasestorage.googleapis.com")) {
-            // Extract path from URL: https://firebasestorage.../o/profile-pictures%2F...?alt=media
-            const url = new URL(auth.currentUser.photoURL);
+          const oldPhotoURL = auth.currentUser.photoURL;
+          if (oldPhotoURL.includes("firebasestorage.googleapis.com")) {
+            console.log("🗑️ Deleting old profile picture...");
+            const url = new URL(oldPhotoURL);
             const pathMatch = url.pathname.match(/\/o\/(.+)\?/);
             if (pathMatch) {
               const decodedPath = decodeURIComponent(pathMatch[1]);
               const oldPhotoRef = ref(storage, decodedPath);
               await deleteObject(oldPhotoRef);
+              console.log("✅ Old profile picture deleted");
             }
           }
-        } catch {
-          // Ignore errors when deleting old photo (might be external URL or already deleted)
+        } catch (deleteError) {
+          console.warn("⚠️ Could not delete old photo (non-critical):", deleteError);
+          // Non-critical error, continue
         }
       }
 
-      // Upload new profile picture
-      const fileRef = ref(storage, `profile-pictures/${auth.currentUser.uid}/${Date.now()}_${file.name}`);
-      await uploadBytes(fileRef, file);
-      const photoURL = await getDownloadURL(fileRef);
+      console.log("🎉 Profile picture update complete!");
+      return photoURL;
 
-      // Update Firebase Auth profile
-      await updateProfile(auth.currentUser, { photoURL });
-      
-      // Update Firestore
-      if (db) {
-        const userRef = doc(db, "users", auth.currentUser.uid);
-        await setDoc(
-          userRef,
-          {
-            photoURL,
-            updatedAt: new Date().toISOString(),
-          },
-          { merge: true }
-        );
+    } catch (error) {
+      console.error("❌ Error updating profile picture:", error);
+      console.error("Error details:", {
+        code: error.code,
+        message: error.message,
+        stack: error.stack,
+      });
+
+      // If upload succeeded but something else failed, try to clean up
+      if (uploadedFileRef && photoURL) {
+        try {
+          console.log("🧹 Cleaning up uploaded file due to error...");
+          await deleteObject(uploadedFileRef);
+        } catch (cleanupError) {
+          console.error("Failed to cleanup uploaded file:", cleanupError);
+        }
       }
 
-      // Update local state
-      setUser({ ...auth.currentUser, photoURL });
+      // Provide user-friendly error messages
+      let errorMessage = "Failed to upload profile picture.";
       
-      return photoURL;
-    } catch (error) {
-      console.error("Error updating profile picture:", error);
-      throw error;
+      if (error.code === 'storage/unauthorized') {
+        errorMessage = "Storage access denied. Please check Firebase Storage rules in Firebase Console.";
+      } else if (error.code === 'storage/canceled') {
+        errorMessage = "Upload was canceled.";
+      } else if (error.code === 'storage/unknown') {
+        errorMessage = "Unknown storage error occurred. Please check your internet connection and try again.";
+      } else if (error.code === 'storage/quota-exceeded') {
+        errorMessage = "Storage quota exceeded. Please contact support.";
+      } else if (error.message?.includes('CORS') || error.message?.includes('cors') || 
+                 error.code?.includes('CORS') || error.code?.includes('cors')) {
+        errorMessage = "CORS Error: Firebase Storage CORS is not configured. Please run 'npm run setup-cors' or see FIREBASE_STORAGE_CORS_FIX.md for instructions.";
+      } else if (error.message?.includes('network') || error.message?.includes('Network')) {
+        errorMessage = "Network error. Please check your internet connection and try again.";
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      const detailedError = new Error(errorMessage);
+      detailedError.originalError = error;
+      detailedError.code = error.code;
+      throw detailedError;
     }
   };
 

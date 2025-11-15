@@ -84,10 +84,13 @@ function Header({ onRequestAuth = () => {} }) {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const userButtonRef = useRef(null);
 
-  const name = useMemo(
-    () => user?.displayName || (user?.email ? user.email.split("@")[0] : ""),
-    [user]
-  );
+  const name = useMemo(() => {
+    const rawName = user?.displayName || (user?.email ? user.email.split("@")[0] : "");
+    if (!rawName) return "";
+    // Capitalize first letter
+    return rawName.charAt(0).toUpperCase() + rawName.slice(1).toLowerCase();
+  }, [user]);
+  
   const greeting = useMemo(
     () => (user ? `Hi, ${name}` : "Hi there"),
     [user, name]
@@ -204,10 +207,33 @@ function Header({ onRequestAuth = () => {} }) {
                 aria-haspopup="true"
               >
                 {user?.photoURL ? (
-                  <img src={user.photoURL} alt={name || "User"} />
-                ) : (
-                  <CiUser size={18} aria-hidden />
-                )}
+                  <img 
+                    key={user.photoURL}
+                    src={user.photoURL} 
+                    alt={name || "User"}
+                    loading="lazy"
+                    className="uf3-user-img"
+                    style={{ 
+                      display: "block", 
+                      width: "24px", 
+                      height: "24px", 
+                      borderRadius: "50%", 
+                      objectFit: "cover",
+                      border: "1px solid rgba(0, 0, 0, 0.1)"
+                    }}
+                    onError={(e) => {
+                      e.currentTarget.style.display = "none";
+                      const icon = e.currentTarget.nextElementSibling;
+                      if (icon) icon.style.display = "block";
+                    }}
+                  />
+                ) : null}
+                <CiUser 
+                  size={18} 
+                  aria-hidden 
+                  className="uf3-user-icon"
+                  style={{ display: user?.photoURL ? "none" : "block" }}
+                />
                 <span className="uf3-greeting">{greeting}</span>
               </button>
               {user && (
@@ -365,10 +391,33 @@ function Header({ onRequestAuth = () => {} }) {
               }}
             >
               {user?.photoURL ? (
-                <img src={user.photoURL} alt={name || "User"} />
-              ) : (
-                <CiUser size={18} aria-hidden />
-              )}
+                <img 
+                  key={user.photoURL}
+                  src={user.photoURL} 
+                  alt={name || "User"}
+                  loading="lazy"
+                  className="uf3-mob-user-img"
+                  style={{ 
+                    display: "block", 
+                    width: "24px", 
+                    height: "24px", 
+                    borderRadius: "50%", 
+                    objectFit: "cover",
+                    border: "1px solid rgba(0, 0, 0, 0.1)"
+                  }}
+                  onError={(e) => {
+                    e.currentTarget.style.display = "none";
+                    const icon = e.currentTarget.nextElementSibling;
+                    if (icon) icon.style.display = "block";
+                  }}
+                />
+              ) : null}
+              <CiUser 
+                size={18} 
+                aria-hidden 
+                className="uf3-mob-user-icon"
+                style={{ display: user?.photoURL ? "none" : "block" }}
+              />
               <span>{user ? `Hi, ${name}` : "Login / Sign up"}</span>
             </button>
 

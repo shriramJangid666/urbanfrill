@@ -38,6 +38,9 @@ npm run build
 
 # Deploy to GitHub Pages
 npm run deploy
+
+# Setup Firebase Storage CORS (for profile picture uploads)
+npm run setup-cors
 ```
 
 ## 🗂️ Project Structure
@@ -145,7 +148,46 @@ VITE_FIREBASE_AUTH_DOMAIN=your_domain
 - ✅ Improved URL structure and sharability
 - ✅ Enhanced mobile navigation
 
+## 💳 Payment Gateway
+
+- **Razorpay Integration**: Fully functional payment gateway
+- **Test Mode**: Currently using Razorpay test keys
+- **Payment Methods**: Online Payment (Razorpay) and Cash on Delivery
+- **Order Management**: Orders saved to Firestore with payment tracking
+
+### Test Cards (Razorpay Test Mode)
+- **Success**: `4111 1111 1111 1111`
+- **Failure**: `4000 0000 0000 0002`
+- **CVV**: Any 3 digits
+- **Expiry**: Any future date
+
 ## 🐛 Known Issues & Solutions
+
+### Firebase Storage CORS Error
+
+If you encounter CORS errors when uploading profile pictures, run:
+
+```bash
+npm run setup-cors
+```
+
+This automated script will configure CORS for Firebase Storage. See `FIREBASE_STORAGE_CORS_FIX.md` for detailed instructions.
+
+### Firestore Order Saving Timeout
+
+If orders are timing out when saving to Firestore:
+
+1. **Test Firestore connection:**
+   ```bash
+   npm run test-firestore
+   ```
+
+2. **Fix Firestore Rules:**
+   - See `FIRESTORE_RULES_FIX.md` for detailed instructions
+   - Update rules in Firebase Console → Firestore Database → Rules
+   - Allow authenticated users to create orders
+
+**Note:** Payments work perfectly! Orders are automatically saved to localStorage as backup until Firestore rules are fixed.
 
 See `ROUTING_CHANGES.md` and `DEPLOYMENT_GUIDE.md` for detailed information.
 

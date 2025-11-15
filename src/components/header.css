@@ -113,11 +113,20 @@
 .uf3-user.active {
   background: #f3f4f6;
 }
-.uf3-user img {
-  width: 18px;
-  height: 18px;
-  border-radius: 999px;
+.uf3-user img,
+.uf3-user-img {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
   object-fit: cover;
+  display: block;
+  flex-shrink: 0;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: #fff;
+}
+
+.uf3-user-icon {
+  flex-shrink: 0;
 }
 .uf3-greeting {
   color: var(--fg);
@@ -355,11 +364,20 @@
   background: #fff;
   cursor: pointer;
 }
-.uf3-mob-userbtn img {
-  width: 20px;
-  height: 20px;
-  border-radius: 999px;
+.uf3-mob-userbtn img,
+.uf3-mob-user-img {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
   object-fit: cover;
+  display: block;
+  flex-shrink: 0;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: #fff;
+}
+
+.uf3-mob-user-icon {
+  flex-shrink: 0;
 }
 .uf3-mob-logout {
   background: transparent;
@@ -777,22 +795,7 @@
   line-height: 1; /* remove baseline drift */
 }
 
-.uf3-user img {
-  display: block; /* fixes baseline bump so it centers perfectly */
-  width: 18px;
-  height: 18px;
-  border-radius: 999px;
-  object-fit: cover;
-}
-
-/* If you also want a slightly smaller avatar inside the mobile drawer button */
-.uf3-mob-userbtn img {
-  display: block;
-  width: 18px;
-  height: 18px;
-  border-radius: 999px;
-  object-fit: cover;
-}
+/* Duplicate .uf3-user img removed - already defined above */
 
 /* Ensure header links change color only (no underline) */
 .uf3-header a {

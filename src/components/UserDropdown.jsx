@@ -1,9 +1,8 @@
 // src/components/UserDropdown.jsx
-import React, { useState, useRef, useEffect } from "react";
+import React, { useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/useAuth";
-import { CiUser, CiSettings, CiLogout } from "react-icons/ci";
-import { HiOutlinePhoto } from "react-icons/hi2";
+import { CiUser, CiLogout } from "react-icons/ci";
 import "./user-dropdown.css";
 
 export default function UserDropdown({ isOpen, onClose, triggerRef }) {
@@ -56,19 +55,38 @@ export default function UserDropdown({ isOpen, onClose, triggerRef }) {
     }
   };
 
-  const name = user?.displayName || (user?.email ? user.email.split("@")[0] : "User");
+  const name = (() => {
+    const rawName = user?.displayName || (user?.email ? user.email.split("@")[0] : "User");
+    if (!rawName) return "User";
+    // Capitalize first letter
+    return rawName.charAt(0).toUpperCase() + rawName.slice(1).toLowerCase();
+  })();
 
   return (
     <div className="user-dropdown" ref={dropdownRef}>
       <div className="user-dropdown-header">
         <div className="user-dropdown-avatar">
           {user?.photoURL ? (
-            <img src={user.photoURL} alt={name} />
-          ) : (
-            <div className="user-dropdown-avatar-placeholder">
-              {name[0]?.toUpperCase() || "U"}
-            </div>
-          )}
+            <img 
+              key={user.photoURL}
+              src={user.photoURL} 
+              alt={name}
+              loading="lazy"
+              onError={(e) => {
+                e.currentTarget.style.display = "none";
+                const placeholder = e.currentTarget.nextElementSibling;
+                if (placeholder) {
+                  placeholder.style.display = "flex";
+                }
+              }}
+            />
+          ) : null}
+          <div 
+            className="user-dropdown-avatar-placeholder"
+            style={{ display: user?.photoURL ? "none" : "flex" }}
+          >
+            {name[0]?.toUpperCase() || "U"}
+          </div>
         </div>
         <div className="user-dropdown-info">
           <div className="user-dropdown-name">{name}</div>
@@ -87,25 +105,6 @@ export default function UserDropdown({ isOpen, onClose, triggerRef }) {
           <CiUser size={20} />
           <span>My Profile</span>
         </button>
-
-        <label className="user-dropdown-item" htmlFor="profile-image-upload">
-          <HiOutlinePhoto size={20} />
-          <span>Change Photo</span>
-          <input
-            id="profile-image-upload"
-            type="file"
-            accept="image/*"
-            style={{ display: "none" }}
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) {
-                // This will be handled by ProfilePage
-                navigate("/profile?upload=photo");
-                onClose();
-              }
-            }}
-          />
-        </label>
 
         <button
           className="user-dropdown-item"

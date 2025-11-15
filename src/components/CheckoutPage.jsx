@@ -1,20 +1,42 @@
 // src/components/CheckoutPage.jsx
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/useAuth";
 import { productImg, asset } from "../utils/asset";
 import { forceTop } from "../utils/scrollToTop";
+import { initiatePayment, saveOrderToFirestore } from "../utils/payment";
+import PaymentErrorModal from "./PaymentErrorModal";
 import "./checkout-page.css";
 
 export default function CheckoutPage() {
+  const navigate = useNavigate();
+  const { cart, itemCount, subTotal, clearCart } = useCart();
+  const { user } = useAuth();
+  const [processing, setProcessing] = useState(false);
+  const [error, setError] = useState("");
+  const [showPaymentError, setShowPaymentError] = useState(false);
+  const [paymentError, setPaymentError] = useState(null);
+  const orderDataRef = useRef(null); // Store order data for retry
+
   // Scroll to top when checkout page opens
   useEffect(() => {
     forceTop();
   }, []);
-  const navigate = useNavigate();
-  const { cart, itemCount, subTotal, clearCart } = useCart();
-  const { user } = useAuth();
+
+  // Lock body scroll when payment error modal is open
+  useEffect(() => {
+    const prev = document.body.style.overflow;
+    if (showPaymentError) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = prev || "";
+    }
+    return () => {
+      document.body.style.overflow = prev || "";
+    };
+  }, [showPaymentError]);
+  
   const [formData, setFormData] = useState({
     name: user?.displayName || "",
     email: user?.email || "",
@@ -23,7 +45,7 @@ export default function CheckoutPage() {
     city: "",
     state: "",
     pincode: "",
-    paymentMethod: "cod", // cash on delivery
+    paymentMethod: "online", // default to online payment
   });
 
   const handleChange = (e) => {
@@ -35,27 +57,187 @@ export default function CheckoutPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    e.stopPropagation(); // Prevent any event bubbling
+    
+    setError("");
+    setProcessing(true);
     
     // Validate form
     if (!formData.name || !formData.email || !formData.phone || !formData.address || 
         !formData.city || !formData.state || !formData.pincode) {
-      alert("Please fill in all required fields");
+      setError("Please fill in all required fields");
+      setProcessing(false);
       return;
     }
 
-    // Here you would typically:
-    // 1. Create an order in Firebase
-    // 2. Process payment (Razorpay integration)
-    // 3. Send confirmation email
-    // 4. Clear cart
-    // 5. Redirect to order confirmation page
+    try {
+      // Create order data
+      const orderData = {
+        userId: user?.uid || "guest",
+        userEmail: formData.email,
+        userName: formData.name,
+        items: cart.map(item => ({
+          id: item.id,
+          name: item.name,
+          price: item.price,
+          qty: item.qty,
+          image: item.image,
+        })),
+        shippingAddress: {
+          name: formData.name,
+          phone: formData.phone,
+          address: formData.address,
+          city: formData.city,
+          state: formData.state,
+          pincode: formData.pincode,
+        },
+        totalAmount: subTotal,
+        itemCount: itemCount,
+        paymentMethod: formData.paymentMethod,
+        status: formData.paymentMethod === "cod" ? "pending" : "payment_pending",
+        createdAt: new Date().toISOString(),
+      };
 
-    // For now, just show a success message
-    alert(`Order placed successfully!\n\nOrder Total: ₹${Number(subTotal || 0).toLocaleString()}\n\nWe'll contact you soon for delivery.`);
-    
-    // Clear cart and redirect
-    clearCart();
-    navigate("/");
+      // Store order data for retry
+      orderDataRef.current = orderData;
+
+      if (formData.paymentMethod === "cod") {
+        // Cash on Delivery - Create order directly
+        const orderId = await saveOrderToFirestore(orderData);
+        
+        // Clear cart and redirect to order confirmation
+        clearCart();
+        navigate(`/order-confirmation/${orderId}`, {
+          state: { orderId, paymentMethod: "cod" }
+        });
+      } else {
+        // Online Payment - Initiate Razorpay
+        // Generate a temporary order ID (we'll save to Firestore after payment succeeds)
+        const tempOrderId = `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+        try {
+          // Ensure any Firebase popups are closed before opening Razorpay
+          try {
+            // Close any open popups (Firebase might have left one open)
+            if (window.opener) {
+              window.opener = null;
+            }
+          } catch (e) {
+            // Ignore errors
+          }
+          
+          const razorpayInstance = await initiatePayment({
+            amount: subTotal,
+            orderId: tempOrderId,
+            customerName: formData.name,
+            customerEmail: formData.email,
+            customerPhone: formData.phone,
+            onSuccess: async (paymentResponse) => {
+              setProcessing(false);
+              try {
+                // Save order to Firestore with payment details
+                const finalOrderId = await saveOrderToFirestore({
+                  ...orderData,
+                  status: "paid",
+                  payment: {
+                    razorpayOrderId: paymentResponse.razorpay_order_id,
+                    razorpayPaymentId: paymentResponse.razorpay_payment_id,
+                    razorpaySignature: paymentResponse.razorpay_signature,
+                    paidAt: new Date().toISOString(),
+                  },
+                });
+
+                // Clear cart and redirect to success page
+                clearCart();
+                navigate(`/order-confirmation/${finalOrderId}`, {
+                  state: { 
+                    orderId: finalOrderId, 
+                    paymentMethod: "online",
+                    paymentId: paymentResponse.razorpay_payment_id 
+                  }
+                });
+              } catch (error) {
+                // Payment succeeded but order save failed - still show success
+                const localOrderId = `local_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+                
+                // Still redirect to confirmation with payment details
+                clearCart();
+                navigate(`/order-confirmation/${localOrderId}`, {
+                  state: { 
+                    orderId: localOrderId, 
+                    paymentMethod: "online",
+                    paymentId: paymentResponse.razorpay_payment_id,
+                    orderData: orderData,
+                    firestoreError: true,
+                  }
+                });
+              }
+            },
+            onFailure: async (error) => {
+              setProcessing(false);
+              // Optionally save failed payment attempt (non-blocking)
+              try {
+                await saveOrderToFirestore({
+                  ...orderData,
+                  status: "payment_failed",
+                  payment: {
+                    error: error.error?.description || error.error?.reason || "Payment failed",
+                    failedAt: new Date().toISOString(),
+                  },
+                }).catch(() => {
+                  // Non-critical, continue
+                });
+              } catch {
+                // Non-critical, continue
+              }
+              // Show payment error modal
+              setPaymentError(error);
+              setShowPaymentError(true);
+            },
+            onDismiss: () => {
+              setProcessing(false);
+            },
+          });
+          
+        } catch (paymentError) {
+          setPaymentError({
+            error: {
+              description: paymentError.message || "Failed to open payment gateway. Please check your internet connection and try again."
+            }
+          });
+          setShowPaymentError(true);
+          setProcessing(false);
+        }
+      }
+    } catch (err) {
+      setPaymentError({
+        error: {
+          description: err.message || "Failed to process order. Please try again."
+        }
+      });
+      setShowPaymentError(true);
+      setProcessing(false);
+    }
+  };
+
+  // Retry payment handler
+  const handleRetryPayment = () => {
+    setShowPaymentError(false);
+    setPaymentError(null);
+    // Retry by submitting the form again
+    const form = document.querySelector('.checkout-form');
+    if (form) {
+      // Create a proper submit event
+      const submitEvent = new Event('submit', { bubbles: true, cancelable: true });
+      form.dispatchEvent(submitEvent);
+    }
+  };
+
+  // Cancel payment handler
+  const handleCancelPayment = () => {
+    setShowPaymentError(false);
+    setPaymentError(null);
+    setProcessing(false);
   };
 
   if (cart.length === 0) {
@@ -194,13 +376,29 @@ export default function CheckoutPage() {
                   onChange={handleChange}
                   required
                 >
+                  <option value="online">Online Payment (Razorpay)</option>
                   <option value="cod">Cash on Delivery</option>
-                  <option value="online" disabled>Online Payment (Coming Soon)</option>
                 </select>
               </div>
 
-              <button type="submit" className="checkout-submit-btn">
-                Place Order
+              {error && !showPaymentError && (
+                <div className="checkout-error" style={{ 
+                  color: "#dc2626", 
+                  padding: "12px", 
+                  background: "#fee", 
+                  borderRadius: "6px",
+                  marginBottom: "16px"
+                }}>
+                  {error}
+                </div>
+              )}
+
+              <button 
+                type="submit" 
+                className="checkout-submit-btn"
+                disabled={processing}
+              >
+                {processing ? "Processing..." : formData.paymentMethod === "online" ? "Proceed to Payment" : "Place Order"}
               </button>
             </form>
           </div>
@@ -245,6 +443,14 @@ export default function CheckoutPage() {
           </div>
         </div>
       </div>
+
+      {/* Payment Error Modal */}
+      <PaymentErrorModal
+        open={showPaymentError}
+        error={paymentError}
+        onRetry={handleRetryPayment}
+        onCancel={handleCancelPayment}
+      />
     </div>
   );
 }

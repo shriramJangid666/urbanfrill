@@ -18,6 +18,7 @@ import HomePage from "./components/HomePage";
 import CartPage from "./components/CartPage";
 import CheckoutPage from "./components/CheckoutPage";
 import ProfilePage from "./components/ProfilePage";
+import OrderConfirmationPage from "./components/OrderConfirmationPage";
 import { useAuth } from "./context/useAuth";
 import "./index.css";
 
@@ -109,6 +110,17 @@ export default function App() {
               <div>
                 <main>
                   <ProfilePage />
+                </main>
+                <Footer />
+              </div>
+            }
+          />
+          <Route
+            path="/order-confirmation/:orderId"
+            element={
+              <div>
+                <main>
+                  <OrderConfirmationPage />
                 </main>
                 <Footer />
               </div>
