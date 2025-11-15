@@ -96,6 +96,7 @@ function FeaturedSlide({ priority = false }) {
 
 function SingleSlide({ id, label, priority = false }) {
   const src = asset(`images/${fileMap[id]}`);
+  const [loaded, setLoaded] = React.useState(false);
   return (
     <figure className="hero-single card">
       <img
@@ -104,6 +105,8 @@ function SingleSlide({ id, label, priority = false }) {
         loading={priority ? "eager" : "lazy"}
         decoding="async"
         fetchPriority={priority ? "high" : "auto"}
+        onLoad={() => setLoaded(true)}
+        style={{ opacity: loaded ? 1 : 0.7, transition: "opacity 0.3s ease" }}
       />
       <figcaption className="badge">{label}</figcaption>
       <div className="scrim" />
@@ -117,59 +120,111 @@ export default function Hero() {
     const i = Math.floor(Math.random() * CATS.length);
     return CATS[i].id;
   });
-  const [prev, setPrev] = useState(null);
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const rotateTimerRef = useRef(null);
+  const transitionTimerRef = useRef(null);
 
   const idx = useMemo(() => CATS.findIndex((c) => c.id === active), [active]);
   const nextId = CATS[(idx + 1) % CATS.length].id;
+  const prevId = CATS[(idx - 1 + CATS.length) % CATS.length].id;
   const currentCat = CATS[idx];
   const { title, desc, cta } = copy[active];
 
-  // Auto-rotate
+  // Auto-rotate — preload next image
   useEffect(() => {
     if (rotateTimerRef.current) clearTimeout(rotateTimerRef.current);
+    if (transitionTimerRef.current) clearTimeout(transitionTimerRef.current);
+    
+    // Preload the next slide's image for smoother transition
+    const nextIdx = (idx + 1) % CATS.length;
+    const nextCatId = CATS[nextIdx].id;
+    // If the upcoming slide is the featured collage, preload its three images
+    if (nextCatId === "featured") {
+      const imgs = [
+        asset("images/hero-left.webp"),
+        asset("images/hero-topright.webp"),
+        asset("images/hero-bottomright.webp"),
+      ];
+      imgs.forEach((s) => {
+        const img = new Image();
+        img.src = s;
+      });
+    } else {
+      const nextImg = new Image();
+      nextImg.src = asset(`images/${fileMap[nextCatId]}`);
+    }
+    
     rotateTimerRef.current = setTimeout(() => {
-      setPrev(active);
-      setActive(nextId);
+      setIsTransitioning(true);
+      // After transition completes, update active and reset position instantly
+      transitionTimerRef.current = setTimeout(() => {
+        setActive(nextId);
+        // Use requestAnimationFrame to ensure DOM update happens before reset
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            setIsTransitioning(false);
+          });
+        });
+      }, 600); // Match CSS transition duration
     }, ROTATE_MS);
-    return () => rotateTimerRef.current && clearTimeout(rotateTimerRef.current);
-  }, [active, nextId]);
+    return () => {
+      if (rotateTimerRef.current) clearTimeout(rotateTimerRef.current);
+      if (transitionTimerRef.current) clearTimeout(transitionTimerRef.current);
+    };
+  }, [active, nextId, idx]);
 
   // Cleanup
   useEffect(
-    () => () => rotateTimerRef.current && clearTimeout(rotateTimerRef.current),
+    () => () => {
+      if (rotateTimerRef.current) clearTimeout(rotateTimerRef.current);
+      if (transitionTimerRef.current) clearTimeout(transitionTimerRef.current);
+    },
     []
   );
 
   const isFeatured = active === "featured";
+  const isNextFeatured = nextId === "featured";
+  const isPrevFeatured = prevId === "featured";
 
   return (
     <section className="hero">
       <div className="hero-container">
         {/* LEFT: slider with right→left motion */}
         <div className="hero-media">
-          <div
-            className={`slider ${prev ? "animating two" : "single"}`}
-            onAnimationEnd={() => setPrev(null)}
+          <div 
+            className="slider carousel" 
+            data-transitioning={isTransitioning ? "true" : "false"}
           >
-            {prev && (
-              <div className="slide prev">
-                {prev === "featured" ? (
-                  <FeaturedSlide />
-                ) : (
-                  <SingleSlide
-                    id={prev}
-                    label={CATS.find((c) => c.id === prev)?.label}
-                  />
-                )}
-              </div>
-            )}
+            {/* Previous slide (off-screen left) */}
+            <div className="slide prev">
+              {isPrevFeatured ? (
+                <FeaturedSlide />
+              ) : (
+                <SingleSlide
+                  id={prevId}
+                  label={CATS.find((c) => c.id === prevId)?.label}
+                />
+              )}
+            </div>
 
-            <div className={`slide current ${prev ? "with-prev" : ""}`}>
+            {/* Current slide (visible) */}
+            <div className="slide current">
               {isFeatured ? (
                 <FeaturedSlide priority />
               ) : (
                 <SingleSlide id={active} label={currentCat.label} priority />
+              )}
+            </div>
+
+            {/* Next slide (off-screen right, ready to slide in) */}
+            <div className="slide next">
+              {isNextFeatured ? (
+                <FeaturedSlide />
+              ) : (
+                <SingleSlide
+                  id={nextId}
+                  label={CATS.find((c) => c.id === nextId)?.label}
+                />
               )}
             </div>
           </div>

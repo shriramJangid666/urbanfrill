@@ -1,11 +1,13 @@
 // src/components/ProductCard.jsx
 import React, { useMemo, useCallback, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/useAuth";
 import { useCart } from "../context/CartContext";
 import { productImg, productPath, asset } from "../utils/asset";
 import "./product-card.css";
 
 function ProductCard({ product, onView = () => {}, index = 0, promptLogin = () => {} }) {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const { addToCart } = useCart();
   const [added, setAdded] = useState(false);
@@ -48,8 +50,8 @@ function ProductCard({ product, onView = () => {}, index = 0, promptLogin = () =
       image: cleanPath,
       qty: 1,
     });
-    window.location.hash = "#cart";
-  }, [user, addToCart, product.id, product.name, priceNumber, cleanPath]);
+    navigate("/checkout");
+  }, [user, addToCart, product.id, product.name, priceNumber, cleanPath, promptLogin, navigate]);
 
   const handleView = useCallback(() => onView(product), [onView, product]);
 
@@ -61,6 +63,7 @@ function ProductCard({ product, onView = () => {}, index = 0, promptLogin = () =
         aria-label={`View ${product.name}`}
       >
         <img
+          key={`${product.id}-${user?.uid || 'guest'}`}
           src={productImg(primaryImage)}
           alt={product.name}
           onError={(e) => (e.currentTarget.src = asset("images/logo.png"))}

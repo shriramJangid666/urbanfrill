@@ -79,6 +79,21 @@ export default function ProductPage({ promptLogin = () => {} }) {
     setTimeout(() => setAdded(false), 1600);
   };
 
+  const handleBuyNow = () => {
+    if (!user) {
+      promptLogin();
+      return;
+    }
+    addToCart({
+      id: product.id,
+      name: product.name,
+      price: Number(product.price) || 0,
+      image: images[0] || "images/placeholder.png",
+      qty: 1,
+    });
+    navigate("/checkout");
+  };
+
   return (
     <div
       className="pp-wrap"
@@ -95,6 +110,7 @@ export default function ProductPage({ promptLogin = () => {} }) {
         <div className="pp-media">
           <div className="pp-main">
             <img
+              key={`${product.id}-${user?.uid || 'guest'}-${idx}`}
               className="pd-main"
               src={productImg(current)}
               alt={product.name}
@@ -116,6 +132,7 @@ export default function ProductPage({ promptLogin = () => {} }) {
                   aria-label={`Show image ${i + 1}`}
                 >
                   <img
+                    key={`${product.id}-${user?.uid || 'guest'}-thumb-${i}`}
                     src={productImg(img)}
                     alt={`thumb-${i + 1}`}
                     loading="lazy"
@@ -142,7 +159,7 @@ export default function ProductPage({ promptLogin = () => {} }) {
             </button>
             <button
               className="pp-btn-outline"
-              onClick={() => alert("Buy now → checkout will be added soon")}
+              onClick={handleBuyNow}
             >
               Buy now
             </button>

@@ -85,7 +85,7 @@ export function CartProvider({ children }) {
     const write = async () => {
       try {
         await setDoc(ref, { items: cart }, { merge: true });
-      } catch (err) {
+      } catch {
         // non-fatal, keep local copy
       }
     };

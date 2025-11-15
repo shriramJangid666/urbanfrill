@@ -36,12 +36,12 @@ export default function ScrollReveal({ children, direction = "up", delay = 0 }) 
           el.classList.add("visible");
           try {
             observer.unobserve(el);
-          } catch (e) {
+          } catch {
             // ignore if observer already disconnected
           }
         }, delay);
       }
-    } catch (e) {
+    } catch {
       // ignore any errors accessing layout (e.g., server-side)
     }
 
@@ -54,7 +54,7 @@ export default function ScrollReveal({ children, direction = "up", delay = 0 }) 
         el.classList.add("visible");
         try {
           observer.unobserve(el);
-        } catch (e) {
+        } catch {
           // ignore
         }
       }

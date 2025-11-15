@@ -15,6 +15,28 @@ function HomePage({ promptLogin = () => {} }) {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // If navigation provided a `state.scrollTo` or a hash, scroll to that section
+  useEffect(() => {
+    const scrollTo = location.state?.scrollTo || (location.hash ? location.hash.replace("#", "") : null);
+    if (!scrollTo) return;
+
+    // small delay to allow DOM to render
+    const t = setTimeout(() => {
+      const el = document.getElementById(scrollTo);
+      if (el) el.scrollIntoView({ behavior: "smooth" });
+
+      // remove scroll state from history so repeated navigations don't retrigger
+      try {
+        const url = window.location.pathname + window.location.search + (location.hash || "");
+        window.history.replaceState({}, document.title, url);
+      } catch {
+        // ignore
+      }
+    }, 120);
+
+    return () => clearTimeout(t);
+  }, [location]);
+
   // Filters (category + search)
   const [category, setCategory] = useState("All");
   const [query, setQuery] = useState("");
@@ -110,7 +132,7 @@ function HomePage({ promptLogin = () => {} }) {
             finish();
         };
         img.src = productImg(src);
-      } catch (e) {
+      } catch {
         // ignore
       }
     });
@@ -142,6 +164,14 @@ function HomePage({ promptLogin = () => {} }) {
     [navigate]
   );
 
+  const handleResetFilters = useCallback(() => {
+    setCategory("All");
+    setQuery("");
+    setPriceMin(prices.min);
+    setPriceMax(prices.max);
+    setSort("relevance");
+  }, [prices.min, prices.max]);
+
   return (
     <main>
       <section id="home">
@@ -165,6 +195,7 @@ function HomePage({ promptLogin = () => {} }) {
             onPriceChange={handlePriceChange}
             sort={sort}
             onSortChange={setSort}
+            onReset={handleResetFilters}
           />
 
           <div className="products-main">
@@ -299,6 +330,16 @@ function HomePage({ promptLogin = () => {} }) {
               onPriceChange={handlePriceChange}
               sort={sort}
               onSortChange={setSort}
+              onReset={() => {
+                handleResetFilters();
+                document
+                  .getElementById("filters-drawer")
+                  ?.classList.remove("show");
+                document
+                  .getElementById("filters-overlay")
+                  ?.classList.remove("show");
+                document.documentElement.classList.remove("no-scroll");
+              }}
             />
           </div>
 

@@ -1,16 +1,13 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import path from 'path'
-import { fileURLToPath } from 'url'
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 export default defineConfig({
-  base: '/urbanfrill/', // required for GitHub Pages
+  // Use '/' for local dev (including mobile access via IP), '/urbanfrill/' for production
+  base: process.env.NODE_ENV === 'production' ? '/urbanfrill/' : '/',
   plugins: [react()],
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './src'),
-    },
+  server: {
+    host: '0.0.0.0', // Listen on all network interfaces
+    port: 5173,
+    strictPort: false, // Allow port to be changed if 5173 is taken
   },
 })

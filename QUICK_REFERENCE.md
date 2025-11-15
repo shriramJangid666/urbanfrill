@@ -13,6 +13,24 @@ http://localhost:5173
 http://<YOUR_IP>:5173
 ```
 
+### Accessing from Mobile Device
+
+1. **Find your computer's local IP address:**
+   - **Windows**: Open PowerShell and run `ipconfig` → Look for "IPv4 Address" under your active network adapter
+   - **Mac/Linux**: Run `ifconfig` or `ip addr` → Look for your network interface IP (usually starts with 192.168.x.x)
+
+2. **Make sure your mobile device is on the same Wi-Fi network** as your computer
+
+3. **Access from mobile browser:**
+   - Open browser on your phone
+   - Go to: `http://YOUR_IP_ADDRESS:5173`
+   - Example: `http://192.168.1.100:5173`
+
+4. **If login doesn't work on mobile:**
+   - Check Firebase Console → Authentication → Settings → Authorized domains
+   - Add your local IP address if needed (though localhost should work)
+   - Make sure you're using the same Firebase project credentials
+
 ## Testing
 
 ```bash

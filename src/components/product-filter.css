@@ -158,6 +158,51 @@
   box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.12);
 }
 
+/* Reset filters button */
+.pf-reset-btn {
+  width: 100%;
+  margin-bottom: 12px;
+  padding: 8px 12px;
+  background: transparent;
+  color: #0d9488;
+  border: 1px solid #0d9488;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  opacity: 1;
+}
+.pf-reset-btn:hover:not(:disabled) {
+  background: #0d9488;
+  color: #fff;
+  transform: translateY(-1px);
+}
+.pf-reset-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+/* Apply button for price filter */
+.pf-apply-btn {
+  width: 100%;
+  margin-top: 10px;
+  padding: 10px 12px;
+  background: #0d9488;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.pf-apply-btn:hover {
+  background: #0b7f73;
+  transform: translateY(-1px);
+}
+.pf-apply-btn:active {
+  transform: translateY(0);
+}
+
 /* Mobile: sidebar collapses to row */
 @media (max-width: 880px) {
   .pf-aside {

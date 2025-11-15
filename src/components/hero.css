@@ -33,47 +33,50 @@
   will-change: transform; /* small GPU hint for smoothness */
 }
 
-/* SLIDER */
-.slider {
+/* SLIDER - Carousel with 3 slides */
+.slider.carousel {
   position: absolute;
   inset: 0;
-  transform: translateX(0%);
+  display: flex;
+  width: 300%; /* 3 slides side by side */
+  transform: translateX(-33.333%); /* Center the current slide */
+  will-change: transform;
+  backface-visibility: hidden;
+  perspective: 1000px;
 }
-.slider.two {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+/* Only animate when transitioning */
+.slider.carousel[data-transitioning="true"] {
+  transition: transform 0.6s cubic-bezier(0.22, 0.61, 0.36, 1);
+  transform: translateX(-66.666%); /* Shift left to show next slide */
 }
-.slider.single {
-  display: block;
+/* When not transitioning, no transition (instant reset) */
+.slider.carousel[data-transitioning="false"] {
+  transition: none;
+  transform: translateX(-33.333%); /* Center the current slide */
+}
+/* Prevent flicker during reset */
+.slider.carousel[data-transitioning="false"] .slide {
+  opacity: 1;
 }
 .slide {
-  width: 100%;
+  width: 33.333%; /* Each slide takes 1/3 of the container */
   height: 100%;
+  flex-shrink: 0;
   display: flex;
   align-items: stretch;
 }
 .slide.prev {
-  grid-column: 1;
+  /* Previous slide is off-screen to the left */
 }
 .slide.current {
-  grid-column: 2;
+  /* Current slide is centered and visible */
 }
-.slider.animating {
-  animation: slideLeft 0.6s cubic-bezier(0.22, 0.61, 0.36, 1) both;
-}
-@keyframes slideLeft {
-  from {
-    transform: translateX(0%);
-    opacity: 0.98;
-  }
-  to {
-    transform: translateX(-100%);
-    opacity: 1;
-  }
+.slide.next {
+  /* Next slide is off-screen to the right, ready to slide in */
 }
 @media (prefers-reduced-motion: reduce) {
-  .slider.animating {
-    animation-duration: 0.001s;
+  .slider.carousel[data-transitioning="true"] {
+    transition-duration: 0.001s;
   }
 }
 

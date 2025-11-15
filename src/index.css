@@ -191,13 +191,15 @@ details > summary::-webkit-details-marker {
   grid-template-columns: 240px 1fr;
   gap: 18px;
   align-items: start;
+  position: relative; /* Create containing block for sticky */
 }
 
 .products-main {
   min-width: 0;
 }
 
-.products-search {
+/* Search bar - sticky only within products-layout container */
+.products-layout .products-search {
   position: sticky;
   top: 82px; /* sits below sticky header */
   background: #fff;
@@ -222,7 +224,7 @@ details > summary::-webkit-details-marker {
   .products-layout {
     grid-template-columns: 1fr;
   }
-  .products-search {
+  .products-layout .products-search {
     top: 74px;
   }
 }
@@ -246,13 +248,7 @@ details > summary::-webkit-details-marker {
   min-width: 0;
 }
 
-.products-search {
-  position: sticky;
-  top: 82px; /* below sticky header */
-  background: transparent; /* blends with section bg */
-  padding: 8px 0 10px;
-  z-index: 1;
-}
+/* Removed - using scoped rule below */
 
 .products-search-input {
   width: 100%;
@@ -275,7 +271,7 @@ details > summary::-webkit-details-marker {
     grid-template-columns: 1fr;
     padding: 0 14px;
   }
-  .products-search {
+  .products-layout .products-search {
     top: 74px;
   }
 }
@@ -297,10 +293,7 @@ details > summary::-webkit-details-marker {
   min-width: 0;
 }
 
-/* Make the search bar compact so cards get more room */
-.products-search {
-  padding: 6px 0 8px;
-}
+/* Removed - using scoped rule below */
 .products-search-input {
   height: 44px;
 }
@@ -309,13 +302,14 @@ details > summary::-webkit-details-marker {
     grid-template-columns: 1fr;
     padding: 0 10px;
   }
-  .products-search {
+  .products-layout .products-search {
     top: 74px;
   }
 }
 /* Kill sticky on very small screens to avoid scroll jank */
 @media (max-width: 480px) {
-  .products-search {
+  .products-layout .products-search,
+  .products-section-bg .products-search {
     position: static;
   }
 }
@@ -326,6 +320,7 @@ details > summary::-webkit-details-marker {
 .products-section-bg {
   background: #fbfcfe;
   overflow-x: clip;
+  position: relative; /* Create containing block for sticky */
 }
 
 .products-layout {
@@ -337,6 +332,7 @@ details > summary::-webkit-details-marker {
   grid-template-columns: 200px 1fr; /* slim sidebar */
   gap: 14px;
   align-items: start;
+  position: relative; /* Create containing block for sticky */
 }
 
 /* Pull ONLY the sidebar to the viewport edge, keep cards centered */
@@ -347,8 +343,8 @@ details > summary::-webkit-details-marker {
   min-width: 0;
 }
 
-/* Compact search so grid gets more space */
-.products-search {
+/* Compact search so grid gets more space - sticky only within container */
+.products-layout .products-search {
   position: sticky;
   top: 82px;
   padding: 6px 0 8px;
@@ -381,13 +377,13 @@ details > summary::-webkit-details-marker {
     grid-template-columns: 1fr;
     padding: 0 10px;
   }
-  .products-search {
+  .products-layout .products-search {
     position: sticky;
     top: 74px;
   }
 }
 @media (max-width: 520px) {
-  .products-search {
+  .products-layout .products-search {
     position: static;
   } /* kill sticky on tiny screens */
 }
@@ -396,6 +392,7 @@ details > summary::-webkit-details-marker {
 .products-section-bg {
   background: #faf9f7; /* same family as hero */
   overflow-x: clip;
+  position: relative; /* Create containing block for sticky */
 }
 
 /* Layout: keep sidebar inside the screen on desktop */
@@ -407,6 +404,7 @@ details > summary::-webkit-details-marker {
   grid-template-columns: 220px 1fr;
   gap: 16px;
   align-items: start;
+  position: relative; /* Create containing block for sticky */
 }
 
 /* Sidebar always visible within page (undo earlier negative offset if any) */
@@ -414,16 +412,17 @@ details > summary::-webkit-details-marker {
   margin-left: 0 !important;
 }
 
-/* Search row */
-.products-search {
+/* Search row — sticky with subtle gradient background, only within products-layout */
+.products-layout .products-search {
   position: sticky;
   top: 82px;
-  padding: 6px 0 8px;
+  padding: 8px 0 10px;
   display: flex;
   gap: 10px;
   align-items: center;
-  background: transparent;
-  z-index: 2;
+  background: linear-gradient(to bottom, #faf9f7 80%, rgba(250, 249, 247, 0.95));
+  z-index: 3;
+  border-bottom: 1px solid rgba(233, 238, 246, 0.3);
 }
 .products-search-input {
   flex: 1 1 auto;
@@ -524,7 +523,8 @@ details > summary::-webkit-details-marker {
 
 /* Smallest screens: avoid sticky to remove jank */
 @media (max-width: 520px) {
-  .products-search {
+  .products-layout .products-search,
+  .products-section-bg .products-search {
     position: static;
   }
 }
@@ -562,18 +562,21 @@ details > summary::-webkit-details-marker {
 /* keep page background consistent with hero/header */
 .products-section-bg {
   background: #faf9f7;
+  position: relative; /* Create containing block for sticky */
 }
 
-/* Search row */
-.products-search {
+/* Search row - sticky only within products section or products-layout */
+.products-section-bg .products-search,
+.products-layout .products-search {
   position: sticky;
   top: 82px;
   padding: 6px 0 8px;
   display: flex;
   gap: 10px;
   align-items: center;
-  background: transparent;
+  background: linear-gradient(to bottom, #faf9f7 80%, rgba(250, 249, 247, 0.95));
   z-index: 2;
+  margin-bottom: 0;
 }
 .products-search-input {
   flex: 1 1 auto;
@@ -587,7 +590,7 @@ details > summary::-webkit-details-marker {
     padding: 0 12px;
   }
 
-  .products-search {
+  .products-layout .products-search {
     display: grid; /* stacks input then button */
     grid-template-columns: 1fr;
     gap: 8px;
@@ -789,7 +792,7 @@ details > summary::-webkit-details-marker {
   }
 
   /* remove sticky behavior */
-  .products-search {
+  .products-layout .products-search {
     position: static !important;
     display: grid;
     grid-template-columns: 1fr;

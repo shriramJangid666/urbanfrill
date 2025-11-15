@@ -15,6 +15,9 @@ import ContactForm from "./components/ContactForm";
 import AuthModal from "./components/AuthModal";
 import CategoryPage from "./components/CategoryPage";
 import HomePage from "./components/HomePage";
+import CartPage from "./components/CartPage";
+import CheckoutPage from "./components/CheckoutPage";
+import ProfilePage from "./components/ProfilePage";
 import { useAuth } from "./context/useAuth";
 import "./index.css";
 
@@ -75,6 +78,39 @@ export default function App() {
                   </ScrollReveal>
                   <Footer />
                 </main>
+              </div>
+            }
+          />
+          <Route
+            path="/cart"
+            element={
+              <div>
+                <main>
+                  <CartPage />
+                </main>
+                <Footer />
+              </div>
+            }
+          />
+          <Route
+            path="/checkout"
+            element={
+              <div>
+                <main>
+                  <CheckoutPage />
+                </main>
+                <Footer />
+              </div>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <div>
+                <main>
+                  <ProfilePage />
+                </main>
+                <Footer />
               </div>
             }
           />

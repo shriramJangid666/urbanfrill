@@ -1,12 +1,12 @@
 // src/components/Header.jsx
-import React, { useState, useMemo, useCallback } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState, useMemo, useCallback, useRef } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/useAuth";
 import { useCart } from "../context/CartContext";
-import CartDrawer from "./CartDrawer";
 import { asset } from "../utils/asset";
 import { TiShoppingCart } from "react-icons/ti";
 import { CiUser } from "react-icons/ci";
+import UserDropdown from "./UserDropdown";
 import "./header.css";
 
 const PRIMARY = [
@@ -78,9 +78,11 @@ function Header({ onRequestAuth = () => {} }) {
   const { user, logout } = useAuth();
   const { itemCount } = useCart();
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const [showCart, setShowCart] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const userButtonRef = useRef(null);
 
   const name = useMemo(
     () => user?.displayName || (user?.email ? user.email.split("@")[0] : ""),
@@ -94,20 +96,23 @@ function Header({ onRequestAuth = () => {} }) {
   const handleNavigate = useCallback(
     (to) => {
       if (to && to.startsWith("/#")) {
-        // Scroll to element on same page
+        // Scroll to element on same page if already at home,
+        // otherwise navigate to home and pass the target id in state
         const elementId = to.substring(2);
-        setTimeout(() => {
-          const element = document.getElementById(elementId);
-          if (element) {
-            element.scrollIntoView({ behavior: "smooth" });
-          }
-        }, 100);
+        if (location.pathname === "/") {
+          setTimeout(() => {
+            const element = document.getElementById(elementId);
+            if (element) element.scrollIntoView({ behavior: "smooth" });
+          }, 100);
+        } else {
+          navigate("/", { state: { scrollTo: elementId } });
+        }
       } else {
         navigate(to);
       }
       setMenuOpen(false);
     },
-    [navigate]
+    [navigate, location]
   );
 
   const handleCartClick = useCallback(() => {
@@ -115,14 +120,16 @@ function Header({ onRequestAuth = () => {} }) {
       onRequestAuth();
       return;
     }
-    setShowCart(true);
-  }, [user, onRequestAuth]);
+    navigate("/cart");
+  }, [user, onRequestAuth, navigate]);
 
   const handleUserClick = useCallback(() => {
-    if (!user) onRequestAuth();
+    if (!user) {
+      onRequestAuth();
+    } else {
+      setUserMenuOpen((prev) => !prev);
+    }
   }, [user, onRequestAuth]);
-
-  const handleCloseCart = useCallback(() => setShowCart(false), []);
 
   const toggleMenu = useCallback(() => setMenuOpen((v) => !v), []);
 
@@ -136,6 +143,15 @@ function Header({ onRequestAuth = () => {} }) {
             className="uf3-brand"
             to="/"
             aria-label="UrbanFrill Home"
+            onClick={(e) => {
+              if (location.pathname === "/") {
+                e.preventDefault();
+                window.scrollTo({ top: 0, behavior: "smooth" });
+                setMenuOpen(false);
+              } else {
+                setMenuOpen(false);
+              }
+            }}
           >
             <img
               className="uf3-logo"
@@ -157,7 +173,19 @@ function Header({ onRequestAuth = () => {} }) {
                   {p.label}
                 </button>
               ) : (
-                <Link key={p.label} to={p.to} onClick={() => setMenuOpen(false)}>
+                <Link
+                  key={p.label}
+                  to={p.to}
+                  onClick={(e) => {
+                    setMenuOpen(false);
+                    if (p.to === "/") {
+                      if (location.pathname === "/") {
+                        e.preventDefault();
+                        window.scrollTo({ top: 0, behavior: "smooth" });
+                      }
+                    }
+                  }}
+                >
                   {p.label}
                 </Link>
               )
@@ -166,18 +194,30 @@ function Header({ onRequestAuth = () => {} }) {
 
           {/* Right: actions */}
           <div className="uf3-actions">
-            <button
-              className="uf3-user uf3-hide-on-mobile"
-              onClick={handleUserClick}
-              title={user ? name : "Login / Sign up"}
-            >
-              {user?.photoURL ? (
-                <img src={user.photoURL} alt={name || "User"} />
-              ) : (
-                <CiUser size={18} aria-hidden />
+            <div className="uf3-user-wrapper uf3-hide-on-mobile" style={{ position: "relative" }}>
+              <button
+                ref={userButtonRef}
+                className={`uf3-user ${userMenuOpen ? "active" : ""}`}
+                onClick={handleUserClick}
+                title={user ? name : "Login / Sign up"}
+                aria-expanded={userMenuOpen}
+                aria-haspopup="true"
+              >
+                {user?.photoURL ? (
+                  <img src={user.photoURL} alt={name || "User"} />
+                ) : (
+                  <CiUser size={18} aria-hidden />
+                )}
+                <span className="uf3-greeting">{greeting}</span>
+              </button>
+              {user && (
+                <UserDropdown
+                  isOpen={userMenuOpen}
+                  onClose={() => setUserMenuOpen(false)}
+                  triggerRef={userButtonRef}
+                />
               )}
-              <span className="uf3-greeting">{greeting}</span>
-            </button>
+            </div>
 
             <button
               className="uf3-cart uf3-hide-on-mobile"
@@ -189,11 +229,7 @@ function Header({ onRequestAuth = () => {} }) {
               {itemCount > 0 && <span className="uf3-badge">{itemCount}</span>}
             </button>
 
-            {user ? (
-              <button className="uf3-ghost uf3-hide-on-mobile" onClick={logout}>
-                Logout
-              </button>
-            ) : (
+            {!user && (
               <button
                 className="uf3-primarybtn uf3-hide-on-mobile"
                 onClick={onRequestAuth}
@@ -293,6 +329,15 @@ function Header({ onRequestAuth = () => {} }) {
               className="uf3-mobbrand"
               to="/"
               aria-label="UrbanFrill Home"
+              onClick={(e) => {
+                if (location.pathname === "/") {
+                  e.preventDefault();
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                  setMenuOpen(false);
+                } else {
+                  setMenuOpen(false);
+                }
+              }}
             >
               <img className="uf3-logo" src={asset("images/logo.png")} alt="" />
               <span className="uf3-title">UrbanFrill</span>
@@ -310,7 +355,14 @@ function Header({ onRequestAuth = () => {} }) {
           <div className="uf3-mob-user">
             <button
               className="uf3-mob-userbtn"
-              onClick={() => (!user ? onRequestAuth() : null)}
+              onClick={() => {
+                if (!user) {
+                  onRequestAuth();
+                } else {
+                  navigate("/profile");
+                  setMenuOpen(false);
+                }
+              }}
             >
               {user?.photoURL ? (
                 <img src={user.photoURL} alt={name || "User"} />
@@ -331,17 +383,6 @@ function Header({ onRequestAuth = () => {} }) {
               <span>Cart {itemCount > 0 ? `(${itemCount})` : ""}</span>
             </button>
 
-            {user && (
-              <button
-                className="uf3-mob-logout"
-                onClick={() => {
-                  logout();
-                  setMenuOpen(false);
-                }}
-              >
-                Logout
-              </button>
-            )}
           </div>
 
           {/* Primary links */}
@@ -403,8 +444,6 @@ function Header({ onRequestAuth = () => {} }) {
           </div>
         </div>
       </header>
-
-      <CartDrawer open={showCart} onClose={handleCloseCart} />
     </>
   );
 }

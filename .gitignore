@@ -45,3 +45,5 @@ temp/
 # Keep images and static files
 !public/
 !public/**
+
+.vercel

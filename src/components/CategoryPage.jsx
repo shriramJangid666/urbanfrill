@@ -118,7 +118,7 @@ function CategoryPage({ promptLogin = () => {} }) {
             finish();
         };
         img.src = productImg(src);
-      } catch (e) {
+      } catch {
         // ignore
       }
     });
@@ -148,6 +148,14 @@ function CategoryPage({ promptLogin = () => {} }) {
     [navigate]
   );
 
+  const handleResetFilters = useCallback(() => {
+    setQuery("");
+    setPriceMin(prices.min);
+    setPriceMax(prices.max);
+    setSort("relevance");
+    navigate("/category/All");
+  }, [prices.min, prices.max, navigate]);
+
   return (
     <main>
       <div className="products-layout">
@@ -163,6 +171,7 @@ function CategoryPage({ promptLogin = () => {} }) {
           onPriceChange={handlePriceChange}
           sort={sort}
           onSortChange={setSort}
+          onReset={handleResetFilters}
         />
 
         <div className="products-main">
@@ -290,6 +299,14 @@ function CategoryPage({ promptLogin = () => {} }) {
             onPriceChange={handlePriceChange}
             sort={sort}
             onSortChange={setSort}
+            onReset={() => {
+              handleResetFilters();
+              document.getElementById("filters-drawer")?.classList.remove("show");
+              document
+                .getElementById("filters-overlay")
+                ?.classList.remove("show");
+              document.documentElement.classList.remove("no-scroll");
+            }}
           />
         </div>
 

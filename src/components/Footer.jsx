@@ -9,7 +9,7 @@ export default function Footer() {
   )}`;
 
   return (
-    <footer className="uf-footer" id="contact">
+    <footer className="uf-footer">
       <div className="footer-container">
         {/* Brand / About */}
         <div className="footer-about">

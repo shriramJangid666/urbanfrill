@@ -24,7 +24,15 @@ export default function AuthForm() {
       }
       // on success, AuthProvider updates user and App auto-closes modal
     } catch (err) {
-      setError(err.message || "Authentication failed");
+      console.error('Auth error:', err);
+      // Provide more helpful error messages
+      let errorMsg = err.message || "Authentication failed";
+      if (err.code === 'auth/unauthorized-domain') {
+        errorMsg = "Domain not authorized. Check Firebase Console → Authentication → Settings → Authorized domains";
+      } else if (err.code === 'auth/network-request-failed') {
+        errorMsg = "Network error. Check your connection and Firebase configuration.";
+      }
+      setError(errorMsg);
     } finally {
       setBusy(false);
     }
@@ -36,7 +44,12 @@ export default function AuthForm() {
     try {
       await googleSignIn();
     } catch (err) {
-      setError(err.message || "Google sign-in failed");
+      console.error('Google sign-in error:', err);
+      let errorMsg = err.message || "Google sign-in failed";
+      if (err.code === 'auth/unauthorized-domain') {
+        errorMsg = "Domain not authorized. Check Firebase Console → Authentication → Settings → Authorized domains";
+      }
+      setError(errorMsg);
     } finally {
       setBusy(false);
     }
